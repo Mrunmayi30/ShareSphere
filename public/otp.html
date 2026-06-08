@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="css/assets/logo1.png">
+<title>Verify OTP - ShareSphere</title>
+<link rel="stylesheet" href="otp.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Email Verification</h2>
+
+<p id="email-text"></p>
+
+<div class="otp-boxes">
+<input type="text" maxlength="1">
+<input type="text" maxlength="1">
+<input type="text" maxlength="1">
+<input type="text" maxlength="1">
+<input type="text" maxlength="1">
+<input type="text" maxlength="1">
+</div>
+
+<button onclick="verifyOTP()">Verify OTP</button>
+
+<div class="resend">
+Resend OTP in <span id="timer">30</span>s
+</div>
+
+</div>
+
+<script>
+
+// get email from register page
+const email = localStorage.getItem("userEmail");
+
+document.getElementById("email-text").innerText =
+"Enter the OTP sent to " + email;
+
+
+// OTP BOX AUTO MOVE
+const inputs = document.querySelectorAll(".otp-boxes input");
+
+inputs.forEach((input,index)=>{
+
+input.addEventListener("input",()=>{
+
+if(input.value.length === 1 && index < inputs.length-1){
+inputs[index+1].focus();
+}
+
+});
+
+input.addEventListener("keydown",(e)=>{
+
+if(e.key === "Backspace" && !input.value && index>0){
+inputs[index-1].focus();
+}
+
+});
+
+});
+
+
+// GET OTP
+function getOTP(){
+
+let otp="";
+
+inputs.forEach(input=>{
+otp+=input.value;
+});
+
+return otp;
+
+}
+
+
+// VERIFY OTP
+async function verifyOTP(){
+
+const otp = getOTP();
+
+if(otp.length !== 6){
+alert("Enter complete OTP");
+return;
+}
+
+const res = await fetch("/api/auth/verify-otp",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email:email,
+otp:otp
+})
+});
+
+const data = await res.json();
+
+if(data.success){
+alert("Account verified!");
+window.location.href="finish-signup.html";
+}
+else{
+alert("Invalid OTP");
+}
+
+}
+
+
+// TIMER
+let time = 30;
+const timer = document.getElementById("timer");
+
+const countdown = setInterval(()=>{
+
+time--;
+timer.innerText=time;
+
+if(time<=0){
+clearInterval(countdown);
+timer.innerHTML = "<span onclick='resendOTP()'>Resend OTP</span>";
+}
+
+},1000);
+
+
+// RESEND OTP
+async function resendOTP(){
+
+const res = await fetch("/api/auth/send-otp",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({email})
+});
+
+const data = await res.json();
+
+if(data.success){
+alert("OTP resent!");
+location.reload();
+}
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Application Under Review - ShareSphere</title>
+<link rel="icon" href="css/assets/logo1.png">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #193f34, #0d271f);
+    color: #333;
+  }
+
+  .waiting-container {
+    background: #fff;
+    padding: 50px 50px 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 480px;
+    width: 90%;
+    animation: fadeIn 0.8s ease;
+  }
+
+  /* --- Spinner --- */
+  .spinner-wrap { position: relative; width: 72px; height: 72px; margin: 0 auto 30px; }
+  .spinner {
+    width: 72px; height: 72px;
+    border: 5px solid #e8f5f0;
+    border-top: 5px solid #193f34;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  /* Subtle inner dot */
+  .spinner-wrap::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px; height: 10px;
+    background: #193f34;
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  h2 { font-size: 22px; font-weight: 700; color: #193f34; margin-bottom: 14px; }
+
+  p { font-size: 14px; color: #666; line-height: 1.7; margin-bottom: 10px; }
+
+  .status-badge {
+    display: inline-block;
+    margin: 18px 0 28px;
+    padding: 6px 20px;
+    background: #e8f5f0;
+    color: #193f34;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border: 1px solid #c0ddd4;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .divider { width: 40px; height: 3px; background: #193f34; border-radius: 2px; margin: 0 auto 24px; opacity: 0.2; }
+
+  .back-home {
+    display: inline-block;
+    padding: 10px 28px;
+    background: #193f34;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.25s, transform 0.15s;
+  }
+  .back-home:hover { background: #0d271f; transform: translateY(-1px); }
+
+  .poll-note { font-size: 11px; color: #aaa; margin-top: 18px; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="waiting-container">
+  <div class="spinner-wrap">
+    <div class="spinner"></div>
+  </div>
+
+  <h2>Application Under Review</h2>
+  <div class="divider"></div>
+  <p>Thank you for submitting your details. Our admin team is reviewing your application — this usually takes a short while.</p>
+
+  <span class="status-badge">Pending Review</span>
+
+  <br>
+  <a href="index.html" class="back-home">Back to Home</a>
+  <p class="poll-note">This page checks for updates automatically.</p>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const userEmail = params.get("email");
+
+  console.log("Email from URL:", userEmail); // ← will show in DevTools console
+
+  if (!userEmail) {
+    // Don't alert — just silently redirect to form
+    window.location.href = "waiting-verification.html?email=" + encodeURIComponent(email);
+} else {
+    checkStatus(); // run once immediately
+    setInterval(checkStatus, 5000);
+  }
+
+  async function checkStatus() {
+    try {
+      const res = await fetch(`/api/lenders/status/${encodeURIComponent(userEmail)}`);
+      const data = await res.json();
+      console.log("Poll response:", data); // ← will show status each poll
+
+      if (data.status === "Verified") {
+        window.location.href = "lender-success.html";
+      } else if (data.status === "Rejected") {
+        window.location.href = "lender-failed.html";
+      }
+    } catch (err) {
+      console.warn("Polling error (will retry):", err.message);
+    }
+  }
+</script>
+</body>
+</html>

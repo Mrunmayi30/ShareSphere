@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="css/assets/logo1.png">
+<title>Sign Up - ShareSphere</title>
+<link rel="stylesheet" href="register.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <img src="css/assets/logo2.png" class="logo">
+
+    <h1>Sign up to<br>ShareSphere</h1>
+
+    <!-- Email OTP Form -->
+    <form id="signup-form">
+        <label>Email address</label>
+        <input type="email" id="email" placeholder="name@domain.com" required>
+
+        <a href="#" class="phone">We’ll send you OTP to verify your account</a>
+
+
+        <button type="button" class="next" id="send-otp-btn">Continue with Email</button>
+
+        <div class="or">or</div>
+
+        <!-- Google Sign Up Button -->
+        <button type="button" class="google" id="google-btn">
+            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google">
+            Sign up with Google
+        </button>
+    </form>
+
+    <!-- OTP Verification -->
+    
+
+    <p class="login">Already have an account? <a href="login.html">Log in</a></p>
+
+</div>
+
+<script>
+
+// Elements
+const emailInput = document.getElementById("email");
+const sendOtpBtn = document.getElementById("send-otp-btn");
+
+// Send Email OTP
+sendOtpBtn.addEventListener("click", async () => {
+
+const email = emailInput.value.trim();
+
+if(!email){
+alert("Please enter your email");
+return;
+}
+
+try {
+
+const res = await fetch("/api/auth/send-otp", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({ email })
+});
+
+const data = await res.json();
+
+if(data.success){
+
+// save email for OTP page
+localStorage.setItem("userEmail", email);
+
+// redirect to OTP page
+window.location.href = "otp.html";
+
+}
+else{
+alert(data.message);
+}
+
+}
+catch(err){
+alert("Error sending OTP");
+}
+
+});
+
+// Google Sign Up
+document.getElementById("google-btn").addEventListener("click", () => {
+window.location.href = "/auth/google";
+});
+
+</script>
+</body>
+</html>

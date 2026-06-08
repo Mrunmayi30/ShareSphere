@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" href="css/assets/logo1.png">
+    <title>ShareSphere - Peer-to-Peer rental platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main">
+        <div class="topbar">
+            <div class="logo">
+                <img src="css/assets/logo2.png" alt="ShareSphere Logo">
+                <span>ShareSphere</span>
+            </div>
+
+            <div class="search-container">
+            <input type="text" placeholder="Search items..." class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div class="auth-buttons">
+
+            <button class="signup">Sign Up</button>
+            <button class="login">Log In</button>
+
+            <div class="user-menu" style="display:none;">
+            <i class="fa-solid fa-user"></i>
+    
+
+            <div class="dropdown">
+            <a href="#">Profile</a>
+            <a href="#" class="logout">Log Out</a>
+            </div>
+            </div>
+
+            <button class="lender">Become a Lender</button>
+
+            </div>
+        </div>
+        <div class ="midbar">
+        <div class="all-cat-wrap">
+    <button class="category-btn main-category" id="allCatBtn">
+        <i class="fa-solid fa-bars"></i>
+        All Categories
+    </button>
+
+    <div class="cat-dropdown" id="catDropdown">
+        <a href="category.html?cat=Electronics"><i class="fa-solid fa-bolt"></i>Electronics</a>
+        <a href="category.html?cat=Furniture"><i class="fa-solid fa-couch"></i>Furniture</a>
+        <a href="category.html?cat=Cameras"><i class="fa-solid fa-camera"></i>Cameras</a>
+        <a href="category.html?cat=Tools"><i class="fa-solid fa-wrench"></i>Tools</a>
+        <a href="category.html?cat=Sports Equipment"><i class="fa-solid fa-baseball-bat-ball"></i>Sports Equipment</a>
+        <a href="category.html?cat=Vehicles"><i class="fa-solid fa-car"></i>Vehicles</a>
+        <a href="category.html?cat=Musical Instruments"><i class="fa-solid fa-music"></i>Musical Instruments</a>
+        <a href="category.html?cat=Home Appliances"><i class="fa-solid fa-blender"></i>Home Appliances</a>
+        <hr>
+        <a href="category.html?cat=Beds"><i class="fa-solid fa-bed"></i>Beds</a>
+        <a href="category.html?cat=Wardrobes"><i class="fa-solid fa-shirt"></i>Wardrobes</a>
+        <a href="category.html?cat=Tables"><i class="fa-solid fa-table-cells"></i>Tables</a>
+        <a href="category.html?cat=TVs, Video - Audio"><i class="fa-solid fa-tv"></i>TVs, Video &amp; Audio</a>
+        <a href="category.html?cat=Fans, Air-conditioners"><i class="fa-solid fa-wind"></i>Fans &amp; Air-conditioners</a>
+        <a href="category.html?cat=Other"><i class="fa-solid fa-box"></i>Other</a>
+    </div>
+</div>
+            <div class="category-list">
+            <button class="category-btn sub-category">Beds</button>
+            <button class="category-btn sub-category">Wardrobes</button>
+            <button class="category-btn sub-category">TVs, Video - Audio</button>
+            <button class="category-btn sub-category">Musical Instruments</button>
+            <button class="category-btn sub-category">Tables</button>
+            <button class="category-btn sub-category">Fans, Air-conditioners</button>
+            </div>
+        </div>
+        <div class="display-bar">
+            <div class="slider">
+            <button class="prev">&#10094;</button>
+                <div class="slides">
+                <img src="css/assets/card1img.jpg">
+                <img src="css/assets/card2img.webp">
+                <img src="css/assets/card3img.webp">
+                <img src="css/assets/card4img.jfif">
+                <img src="css/assets/card5img.webp">
+                </div>
+            <button class="next">&#10095;</button>
+            </div>
+        </div>
+        <!--
+  ============================================================
+  PASTE THIS ENTIRE BLOCK into your index.html,
+  right after the closing </div> of .display-bar
+  ============================================================
+-->
+
+<!-- ── INLINE STYLES (add once, near bottom of your <head> or before </body>) ── -->
+<style>
+  /* ── Shared tokens matching your existing palette ── */
+  :root {
+    --forest: #193f34;
+    --forest-light: #2a6652;
+    --mint: #c8ebe0;
+    --mint-soft: #e8f5f0;
+    --cream: #faf8f3;
+    --ink: #1a1a1a;
+    --muted: #6b7280;
+    --border: #e2e8e4;
+  }
+
+  /* ── Section wrapper ── */
+  .home-sections { background: var(--cream); }
+
+  /* ════════════════════════════════
+     1. HOW IT WORKS
+  ════════════════════════════════ */
+  .how-it-works {
+    padding: 5rem 2rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .section-eyebrow {
+    display: inline-block;
+    font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--forest-light);
+    border: 1px solid var(--mint);
+    padding: 0.28rem 0.9rem; border-radius: 999px;
+    margin-bottom: 1rem;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: var(--forest);
+    margin-bottom: 0.6rem;
+    line-height: 1.2;
+  }
+  .section-sub {
+    font-size: 0.92rem; color: var(--muted);
+    max-width: 520px; margin: 0 auto 3.5rem;
+    line-height: 1.75; font-family: 'Montserrat', sans-serif;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+  .step-card {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 18px;
+    padding: 2rem 1.5rem 1.8rem;
+    position: relative;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 36px rgba(25,63,52,0.10);
+  }
+  .step-number {
+    width: 42px; height: 42px;
+    background: var(--forest);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700;
+    margin: 0 auto 1.2rem;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .step-icon {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .step-card h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    color: var(--forest);
+    margin-bottom: 0.5rem;
+  }
+  .step-card p {
+    font-size: 0.83rem; color: var(--muted);
+    line-height: 1.65; font-family: 'Montserrat', sans-serif;
+  }
+
+  /* connector dots between steps on desktop */
+  .step-connector {
+    display: none;
+  }
+  @media (min-width: 640px) {
+    .steps-grid { grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; align-items: start; }
+    .step-connector {
+      display: flex; align-items: center; padding-top: 3.4rem;
+    }
+    .step-connector span {
+      display: block; width: 28px; height: 2px;
+      background: repeating-linear-gradient(90deg, var(--mint) 0, var(--mint) 5px, transparent 5px, transparent 10px);
+    }
+  }
+
+  /* ════════════════════════════════
+     2. WHY SHARESPHERE  (dark band)
+  ════════════════════════════════ */
+  .why-section {
+    background: var(--forest);
+    padding: 5rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .why-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(200,235,224,0.10) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .why-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  @media (max-width: 720px) {
+    .why-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+  }
+  .why-text .section-eyebrow { color: var(--mint); border-color: rgba(200,235,224,0.3); }
+  .why-text .section-title { color: #fff; text-align: left; }
+  .why-text p {
+    font-size: 0.9rem; color: rgba(255,255,255,0.6);
+    line-height: 1.8; margin-top: 1rem;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .why-pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .pillar {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(200,235,224,0.15);
+    border-radius: 14px;
+    padding: 1.4rem 1.2rem;
+    transition: background 0.2s;
+  }
+  .pillar:hover { background: rgba(200,235,224,0.08); }
+  .pillar-icon {
+    font-size: 1.4rem; margin-bottom: 0.7rem; display: block;
+  }
+  .pillar h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.88rem; font-weight: 700;
+    color: var(--mint); margin-bottom: 0.35rem;
+  }
+  .pillar p {
+    font-size: 0.78rem; color: rgba(255,255,255,0.5);
+    line-height: 1.6; margin: 0 !important;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  /* ════════════════════════════════
+     3. STATS STRIP
+  ════════════════════════════════ */
+  .stats-strip {
+    background: var(--mint-soft);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 2rem;
+  }
+  .stats-inner {
+    max-width: 900px; margin: 0 auto;
+    display: flex; flex-wrap: wrap;
+    justify-content: space-around; gap: 2rem;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem; font-weight: 700;
+    color: var(--forest); line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.78rem; font-weight: 600;
+    color: var(--muted); letter-spacing: 0.06em;
+    text-transform: uppercase; margin-top: 0.4rem;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  /* ════════════════════════════════
+     4. CTA BANNER
+  ════════════════════════════════ */
+  .cta-banner {
+    padding: 5rem 2rem;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .cta-banner .section-title { margin-bottom: 0.8rem; }
+  .cta-banner p {
+    font-size: 0.9rem; color: var(--muted);
+    line-height: 1.75; margin-bottom: 2rem;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--forest); color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.88rem; font-weight: 700;
+    padding: 0.8rem 2rem; border-radius: 10px;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(25,63,52,0.22); }
+  .btn-outline {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: transparent; color: var(--forest);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.88rem; font-weight: 700;
+    padding: 0.8rem 2rem; border-radius: 10px;
+    text-decoration: none; border: 2px solid var(--forest); cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.02em;
+  }
+  .btn-outline:hover { background: var(--forest); color: #fff; }
+
+  /* ════════════════════════════════
+     5. FOOTER
+  ════════════════════════════════ */
+  .site-footer {
+    background: var(--forest);
+    color: rgba(255,255,255,0.5);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    padding: 2.5rem 2rem;
+  }
+  .footer-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center; gap: 1rem;
+  }
+  .footer-brand {
+    font-size: 1rem; font-weight: 700;
+    color: #fff; letter-spacing: 0.04em;
+  }
+  .footer-links { display: flex; gap: 1.4rem; flex-wrap: wrap; }
+  .footer-links a {
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--mint); }
+  .footer-copy { width: 100%; text-align: center; margin-top: 1.5rem; font-size: 0.72rem; }
+
+  /* ── Scroll-reveal animation ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+
+<!-- Playfair Display for headings (matches T&C page) -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+<!-- ─────────────────────────────────────────────── -->
+<!--  START OF SECTIONS                              -->
+<!-- ─────────────────────────────────────────────── -->
+<div class="home-sections">
+
+  <!-- 1. HOW IT WORKS -->
+  <section class="how-it-works reveal">
+    <span class="section-eyebrow">Simple Process</span>
+    <h2 class="section-title">Rent anything in 4 easy steps</h2>
+    <p class="section-sub">ShareSphere connects you directly with item owners nearby. No middlemen, no hidden platform fees — just people helping people.</p>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <span class="step-icon"></span>
+        <h3>Browse Listings</h3>
+        <p>Search by category or keyword to find exactly what you need from verified lenders around you.</p>
+      </div>
+
+      <div class="step-connector"><span></span></div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <span class="step-icon"></span>
+        <h3>Contact the Lender</h3>
+        <p>Get the lender's phone or email directly. No waiting rooms — reach out and discuss details your way.</p>
+      </div>
+
+      <div class="step-connector"><span></span></div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <span class="step-icon"></span>
+        <h3>Agree & Pick Up</h3>
+        <p>Finalise terms, price, and duration with the lender directly. Collect the item at the agreed time.</p>
+      </div>
+
+      <div class="step-connector"><span></span></div>
+
+      <div class="step-card">
+        <div class="step-number">4</div>
+        <span class="step-icon"></span>
+        <h3>Return & Review</h3>
+        <p>Return the item as agreed and leave a review to help the community trust each other more.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. WHY SHARESPHERE -->
+  <section class="why-section">
+    <div class="why-inner">
+      <div class="why-text reveal">
+        <span class="section-eyebrow">Our Mission</span>
+        <h2 class="section-title">Own less.<br>Share more.</h2>
+        <p>Millions of items sit idle across India while others pay full price to buy things they'll use twice. ShareSphere exists to fix that — by making it effortless to lend what you own and borrow what you need.</p>
+        <p>We're building a community of trust, sustainability, and smart sharing — one rental at a time.</p>
+      </div>
+
+      <div class="why-pillars reveal">
+        <div class="pillar">
+          <span class="pillar-icon">🌱</span>
+          <h4>Sustainable</h4>
+          <p>Reduce waste by giving idle items a second life instead of buying new.</p>
+        </div>
+        <div class="pillar">
+          <span class="pillar-icon">💸</span>
+          <h4>Earn Extra</h4>
+          <p>Lend items you rarely use and earn money from things already in your home.</p>
+        </div>
+        <div class="pillar">
+          <span class="pillar-icon">🔒</span>
+          <h4>Verified Users</h4>
+          <p>Every lender and borrower is identity-verified before they can connect.</p>
+        </div>
+        <div class="pillar">
+          <span class="pillar-icon">📍</span>
+          <h4>Hyperlocal</h4>
+          <p>Find items in your city, your neighbourhood — not hundreds of kilometres away.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. STATS -->
+  <div class="stats-strip reveal">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <div class="stat-num">500+</div>
+        <div class="stat-label">Items Listed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">15+</div>
+        <div class="stat-label">Categories</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Peer-to-Peer</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">₹0</div>
+        <div class="stat-label">Platform Fee</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. CTA -->
+  <section class="cta-banner reveal">
+    <span class="section-eyebrow">Get Started</span>
+    <h2 class="section-title">Have something to lend?</h2>
+    <p>List your item for free in under 5 minutes and start connecting with borrowers in your area today.</p>
+    <div class="cta-buttons">
+      <a href="lender-form.html" class="btn-primary">
+        <i class="fa-solid fa-plus"></i> List an Item
+      </a>
+      <a href="category.html" class="btn-outline">
+        Browse Listings
+      </a>
+    </div>
+  </section>
+
+</div><!-- end .home-sections -->
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span class="footer-brand">ShareSphere</span>
+    <nav class="footer-links">
+      <a href="category.html">Browse</a>
+      <a href="lender-form.html">List an Item</a>
+      <a href="terms.html">Terms &amp; Conditions</a>
+      <a href="mailto:support@sharesphere.in">Support</a>
+    </nav>
+    <p class="footer-copy">© 2025 ShareSphere. All rights reserved. Made with ♥ in India.</p>
+  </div>
+</footer>
+
+<!-- ── Scroll-reveal script ── -->
+<script>
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.classList.add('visible');
+        observer.unobserve(el.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+</script>
+    </div>
+    <script>
+const buttons = document.querySelectorAll(".category-btn");
+
+buttons.forEach(button => {
+button.addEventListener("click", () => {
+
+buttons.forEach(btn => btn.classList.remove("active"));
+
+button.classList.add("active");
+
+});
+});
+</script>
+<script>
+
+let index = 0;
+const slides = document.querySelector(".slides");
+const images = document.querySelectorAll(".slides img");
+const total = images.length;
+
+function showSlide(){
+slides.style.transform = `translateX(-${index * 100}%)`;
+}
+
+document.querySelector(".next").onclick = () => {
+index = (index + 1) % total;
+showSlide();
+};
+
+document.querySelector(".prev").onclick = () => {
+index = (index - 1 + total) % total;
+showSlide();
+};
+
+/* AUTO SLIDE EVERY 5 SECONDS */
+setInterval(() => {
+index = (index + 1) % total;
+showSlide();
+}, 5000);
+
+</script>
+<script>
+document.querySelector(".signup").addEventListener("click", function(){
+    window.location.href = "register.html";
+});
+
+document.querySelector(".login").addEventListener("click", function(){
+    window.location.href = "login.html";
+});
+</script>
+<script>
+    const user = localStorage.getItem("loggedInUser");
+
+const signupBtn = document.querySelector(".signup");
+const loginBtn = document.querySelector(".login");
+const userMenu = document.querySelector(".user-menu");
+const username = document.querySelector(".username");
+
+if(user){
+signupBtn.style.display = "none";
+loginBtn.style.display = "none";
+
+userMenu.style.display = "flex";
+}
+</script>
+<script>
+    document.querySelector(".user-menu").addEventListener("click",function(){
+this.classList.toggle("active");
+});
+</script>
+<script>
+    document.querySelector(".logout").addEventListener("click",function(){
+localStorage.removeItem("loggedInUser");
+window.location.reload();
+});
+</script>
+<script>
+document.querySelector(".lender").addEventListener("click", async function() {
+    const email = localStorage.getItem("loggedInUser");
+
+    if (!email) {
+        // User not logged in
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        const encodedEmail = encodeURIComponent(email);
+
+        // Make sure the URL matches the working backend
+        const res = await fetch(`http://localhost:5000/api/lenders/status/${encodedEmail}`);
+
+        if (!res.ok) throw new Error("Network response was not ok");
+
+        const data = await res.json();
+
+if (data.status === "pending" || data.status === "approved" || data.applied) {
+    window.location.href = "waiting-verification.html?email=" + encodeURIComponent(email);
+} else {
+    window.location.href = "lender-form.html";
+}
+    } catch (err) {
+        console.error("Error checking lender status:", err);
+        alert("Something went wrong. Please try again later.");
+    }
+});
+</script>
+<script>
+    const allCatBtn   = document.getElementById('allCatBtn');
+    const catDropdown = document.getElementById('catDropdown');
+
+    allCatBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        catDropdown.classList.toggle('open');
+    });
+
+    document.addEventListener('click', function() {
+        catDropdown.classList.remove('open');
+    });
+</script>
+<script>
+    const searchBar = document.querySelector(".search-bar");
+
+    searchBar.addEventListener("keydown", function(e) {
+        if (e.key === "Enter") {
+            const query = this.value.trim();
+            if (query) {
+                window.location.href = `category.html?search=${encodeURIComponent(query)}`;
+            }
+        }
+    });
+
+    document.querySelector(".fa-magnifying-glass").addEventListener("click", function() {
+        const query = searchBar.value.trim();
+        if (query) {
+            window.location.href = `category.html?search=${encodeURIComponent(query)}`;
+        }
+    });
+</script>
+</body>
+</html>

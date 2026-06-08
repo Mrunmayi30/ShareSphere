@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verification Pending – ShareSphere</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="icon" href="css/assets/logo1.png">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #193f34;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  body::before, body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  body::before {
+    width: 600px; height: 600px;
+    background: rgba(255,255,255,0.04);
+    top: -200px; right: -150px;
+  }
+  body::after {
+    width: 400px; height: 400px;
+    background: rgba(255,255,255,0.04);
+    bottom: -120px; left: -100px;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+  }
+
+  /* Pulse icon */
+  .icon-wrapper {
+    width: 90px; height: 90px;
+    margin: 0 auto 2rem;
+    position: relative;
+  }
+  .icon-circle {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 2px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both;
+  }
+  .icon-circle svg { color: #fff; animation: fadeInIcon 0.4s 0.4s ease both; opacity: 0; }
+  @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes fadeInIcon { to { opacity: 1; } }
+  .icon-ring {
+    position: absolute; inset: -8px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4);
+    opacity: 0;
+    animation: ringPulse 2s 0.6s ease-out infinite;
+  }
+  .icon-ring-2 {
+    position: absolute; inset: -16px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+    opacity: 0;
+    animation: ringPulse 2s 1s ease-out infinite;
+  }
+  @keyframes ringPulse {
+    0% { transform: scale(1); opacity: 0.5; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  .card {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    backdrop-filter: blur(10px);
+    animation: slideUp 0.6s 0.15s ease both;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .brand {
+    font-family: "Chiron GoRound TC", 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.06em;
+    color: #fff;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  h1 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    color: rgba(255,255,255,0.65);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 1.8rem;
+  }
+
+  .status-chip {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 1.8rem;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    animation: blink 1.5s ease infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  .divider { height: 1px; background: rgba(255,255,255,0.12); margin: 1.5rem 0; }
+
+  .info-list {
+    list-style: none;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.8rem;
+  }
+  .info-list li {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+  }
+  .info-list li svg { flex-shrink: 0; margin-top: 2px; color: rgba(255,255,255,0.5); }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+    border-radius: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.2px;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-home {
+    background: #fff;
+    color: #193f34;
+    box-shadow: 0 4px 20px rgba(255,255,255,0.15);
+  }
+  .btn-home:hover { box-shadow: 0 8px 28px rgba(255,255,255,0.25); }
+
+  .footer-note {
+    margin-top: 1.5rem;
+    font-size: 0.76rem;
+    color: rgba(255,255,255,0.4);
+  }
+  #status-display {
+    margin-top: 1rem;
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.6);
+    font-weight: 500;
+  }
+  #status-display.approved { color: #6effc0; }
+  #status-display.rejected { color: #ff8080; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="icon-wrapper">
+    <div class="icon-circle">
+      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </div>
+    <div class="icon-ring"></div>
+    <div class="icon-ring-2"></div>
+  </div>
+
+  <div class="card">
+    <span class="brand">ShareSphere</span>
+    <h1>Verification in Progress</h1>
+    <p class="subtitle">Your borrower application has been submitted. Our team will review your details and get back to you shortly.</p>
+
+    <div class="status-chip">
+      <div class="status-dot"></div>
+      Under Review
+    </div>
+
+    <ul class="info-list">
+      <li>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Verification usually takes up to 24 hours
+      </li>
+      <li>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        You'll receive an email once your account is verified
+      </li>
+      <li>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        After verification, you can rent any item on ShareSphere
+      </li>
+    </ul>
+
+    <div id="status-display"></div>
+
+    <div class="divider"></div>
+
+    <a href="/index.html" class="btn btn-home">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      Go to Home
+    </a>
+
+    <p class="footer-note">This page checks your status automatically. You can also close it and come back later.</p>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const email = params.get("email") || localStorage.getItem("loggedInUser");
+
+function checkStatus() {
+  if (!email) return;
+  fetch("/api/borrowers/status/" + encodeURIComponent(email))
+    .then(res => res.json())
+    .then(data => {
+      const el = document.getElementById("status-display");
+      if (data.status === "Verified") {
+        el.className = "approved";
+        el.textContent = "✓ You are now verified! Redirecting...";
+        const itemId = sessionStorage.getItem("rentItemId");
+        setTimeout(() => {
+          window.location.href = itemId
+            ? "item-details.html?id=" + itemId
+            : "index.html";
+        }, 2000);
+      } else if (data.status === "Rejected") {
+        el.className = "rejected";
+        el.textContent = "Your application was rejected.";
+        setTimeout(() => window.location.href = "borrower-failed.html", 2000);
+      }
+    })
+    .catch(err => console.error(err));
+}
+
+checkStatus();
+setInterval(checkStatus, 10000);
+</script>
+</body>
+</html>

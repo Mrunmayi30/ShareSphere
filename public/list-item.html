@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>List Your Item - ShareSphere</title>
+<link rel="icon" href="css/assets/logo1.png">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #193f34;
+    --forest-deep: #0d271f;
+    --forest-light: #2a6652;
+    --mint: #c8ebe0;
+    --mint-soft: #e8f5f0;
+    --gold-light: #f0d98a;
+    --cream: #faf8f3;
+    --ink: #1a1a1a;
+    --muted: #6b7280;
+    --border: #e2e8e4;
+    --danger: #dc2626;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--forest);
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+  }
+  .header-brand { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 700; color: white; letter-spacing: 0.5px; }
+  .header-sub { font-size: 13px; color: white; font-weight: 300; margin-top: 2px; }
+
+  .progress-wrap { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 40px; overflow-x: auto; }
+  .progress-steps { display: flex; max-width: 900px; margin: 0 auto; }
+  .step { flex: 1; padding: 16px 8px; text-align: center; font-size: 11px; font-weight: 500; font-family: 'Montserrat', sans-serif; color: var(--muted); border-bottom: 3px solid transparent; cursor: default; transition: all 0.2s; white-space: nowrap; }
+  .step.active { color: var(--forest); border-bottom-color: var(--forest); }
+  .step.done { color: var(--forest-light); border-bottom-color: var(--mint); }
+  .step-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--border); color: var(--muted); font-size: 11px; font-weight: 600; margin-right: 6px; transition: all 0.2s; }
+  .step.active .step-num { background: var(--forest); color: white; }
+  .step.done .step-num { background: var(--mint); color: var(--forest); }
+
+  .page-wrap { max-width: 820px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  .section-card { background: var(--white); border-radius: 16px; border: 1px solid var(--border); padding: 36px 40px; margin-bottom: 24px; display: none; animation: slideUp 0.4s ease; }
+  .section-card.active { display: block; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  .section-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--mint-soft); }
+  .section-title { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 700; color: var(--forest); margin-bottom: 4px; }
+  .section-desc { font-size: 13px; font-weight: 400; color: var(--muted); line-height: 1.5; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .form-grid.cols-1 { grid-template-columns: 1fr; }
+  .span-2 { grid-column: span 2; }
+
+  .field { display: flex; flex-direction: column; gap: 7px; }
+
+  label { font-size: 13px; font-weight: 600; font-family: 'Montserrat', sans-serif; color: var(--ink); letter-spacing: 0.2px; }
+  label .req { color: var(--danger); margin-left: 2px; }
+  label .opt { color: var(--muted); font-weight: 400; font-size: 12px; margin-left: 4px; }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--forest); box-shadow: 0 0 0 3px rgba(25,63,52,0.08); }
+  input.error, select.error, textarea.error { border-color: var(--danger); }
+
+  textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+  select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+
+  .hint { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: 'Montserrat', sans-serif; font-weight: 400; }
+
+  .input-prefix { position: relative; }
+  .input-prefix span { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 13px; font-family: 'Montserrat', sans-serif; color: var(--muted); font-weight: 500; pointer-events: none; }
+  .input-prefix input { padding-left: 28px; }
+
+  .upload-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 28px 20px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--mint-soft); position: relative; }
+  .upload-zone:hover { border-color: var(--forest-light); background: #dff0e8; }
+  .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 28px; margin-bottom: 8px; }
+  .upload-label { font-size: 14px; font-weight: 600; color: var(--forest); font-family: 'Montserrat', sans-serif; }
+  .upload-sub { font-size: 12px; color: var(--muted); margin-top: 4px; font-family: 'Montserrat', sans-serif; }
+
+  .file-previews { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .file-preview-item { position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; border: 2px solid var(--mint); }
+  .file-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+  .file-preview-item .remove-file { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  .video-preview { margin-top: 12px; font-size: 13px; font-family: 'Montserrat', sans-serif; color: var(--forest); font-weight: 500; padding: 8px 12px; background: var(--mint-soft); border-radius: 6px; display: none; }
+
+  .delivery-extra { display: none; }
+  .delivery-extra.visible { display: flex; flex-direction: column; gap: 7px; }
+
+  .checkbox-list { display: flex; flex-direction: column; gap: 14px; }
+  .check-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.15s; }
+  .check-item:hover { border-color: var(--forest-light); background: var(--mint-soft); }
+  .check-item.checked { border-color: var(--forest); background: var(--mint-soft); }
+  .check-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--forest); flex-shrink: 0; margin-top: 1px; cursor: pointer; }
+  .check-text { font-size: 13px; font-family: 'Montserrat', sans-serif; font-weight: 400; color: var(--ink); line-height: 1.5; }
+
+  .optional-badge { display: inline-block; padding: 3px 10px; background: var(--gold-light); color: #7a5c00; border-radius: 20px; font-size: 11px; font-weight: 600; font-family: 'Montserrat', sans-serif; margin-bottom: 20px; letter-spacing: 0.3px; }
+
+  .nav-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--border); }
+
+  .btn { padding: 12px 32px; border-radius: 9px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; letter-spacing: 0.2px; }
+  .btn-primary { background: var(--forest); color: white; }
+  .btn-primary:hover { background: var(--forest-deep); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(25,63,52,0.3); }
+  .btn-secondary { background: transparent; color: var(--forest); border: 1.5px solid var(--forest); }
+  .btn-secondary:hover { background: var(--mint-soft); }
+  .btn-submit { background: linear-gradient(135deg, var(--forest), var(--forest-light)); color: white; padding: 14px 40px; font-size: 14px; }
+  .btn-submit:hover { box-shadow: 0 6px 20px rgba(25,63,52,0.4); transform: translateY(-2px); }
+  .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  #form-error { color: var(--danger); font-size: 13px; font-family: 'Montserrat', sans-serif; font-weight: 500; margin-top: 12px; display: none; }
+
+  @media (max-width: 600px) {
+    .header { padding: 14px 20px; }
+    .page-wrap { padding: 24px 16px 60px; }
+    .section-card { padding: 24px 20px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .span-2 { grid-column: span 1; }
+    .progress-wrap { padding: 0 10px; }
+    .step { font-size: 10px; padding: 12px 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-brand">ShareSphere</div>
+    <div class="header-sub">List Your Item for Rent</div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-steps">
+    <div class="step active" data-step="1"><span class="step-num">1</span> Basic Details</div>
+    <div class="step" data-step="2"><span class="step-num">2</span> Condition</div>
+    <div class="step" data-step="3"><span class="step-num">3</span> Media Proof</div>
+    <div class="step" data-step="4"><span class="step-num">4</span> Declaration</div>
+    <div class="step" data-step="5"><span class="step-num">5</span> Trust & Extras</div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- STEP 1: Basic Details -->
+  <div class="section-card active" id="step-1">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Item Basic Details</div>
+        <div class="section-desc">Tell renters what you're offering. Be specific — better descriptions get more bookings.</div>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field span-2">
+        <label>Item Title <span class="req">*</span></label>
+        <input type="text" id="itemTitle" name="title" placeholder="e.g. Sony Alpha A7III Mirrorless Camera" maxlength="100">
+        <span class="hint">Be descriptive — include brand and key feature</span>
+      </div>
+
+      <div class="field">
+        <label>Category <span class="req">*</span></label>
+        <select id="category" name="category">
+          <option value="">Select Category</option>
+          <option>Electronics</option>
+          <option>Furniture</option>
+          <option>Cameras</option>
+          <option>Tools</option>
+          <option>Sports Equipment</option>
+          <option>Vehicles</option>
+          <option>Musical Instruments</option>
+          <option>Home Appliances</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Brand <span class="req">*</span></label>
+        <input type="text" id="brand" name="brand" placeholder="e.g. Sony, Bosch, Trek">
+      </div>
+
+      <div class="field">
+        <label>Model Number <span class="req">*</span></label>
+        <input type="text" id="modelNumber" name="model_number" placeholder="e.g. ILCE-7M3">
+      </div>
+
+      <div class="field">
+        <label>Serial Number <span class="opt">(if applicable)</span></label>
+        <input type="text" id="serialNumber" name="serial_number" placeholder="e.g. 1234567890">
+      </div>
+
+      <div class="field">
+        <label>Item Age <span class="req">*</span></label>
+        <select id="itemAge" name="item_age">
+          <option value="">Select Age</option>
+          <option>Less than 6 months</option>
+          <option>6–12 months</option>
+          <option>1–2 years</option>
+          <option>2–5 years</option>
+          <option>More than 5 years</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Condition Grade <span class="req">*</span></label>
+        <select id="condition" name="condition">
+          <option value="">Select Condition</option>
+          <option>New</option>
+          <option>Good</option>
+          <option>Used</option>
+          <option>Old</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Original Purchase Price <span class="req">*</span></label>
+        <div class="input-prefix">
+          <span>₹</span>
+          <input type="number" id="purchasePrice" name="purchase_price" placeholder="0" min="0">
+        </div>
+      </div>
+
+      <!-- CHANGED: price per day → price per month -->
+      <div class="field">
+        <label>Rental Price Per Month <span class="req">*</span></label>
+        <div class="input-prefix">
+          <span>₹</span>
+          <input type="number" id="rentPrice" name="price_per_month" placeholder="0" min="0">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Security Deposit <span class="req">*</span></label>
+        <div class="input-prefix">
+          <span>₹</span>
+          <input type="number" id="deposit" name="deposit" placeholder="0" min="0">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Minimum Rental Duration <span class="req">*</span></label>
+        <select id="minDuration" name="min_duration">
+          <option value="">Select</option>
+          <option>1 day</option>
+          <option>3 days</option>
+          <option>1 week</option>
+          <option>2 weeks</option>
+          <option>1 month</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Maximum Rental Duration <span class="req">*</span></label>
+        <select id="maxDuration" name="max_duration">
+          <option value="">Select</option>
+          <option>1 week</option>
+          <option>2 weeks</option>
+          <option>1 month</option>
+          <option>3 months</option>
+          <option>6 months</option>
+          <option>No limit</option>
+        </select>
+      </div>
+
+      <div class="field span-2">
+        <label>Pickup Method <span class="req">*</span></label>
+        <select id="pickupMethod" name="pickup_method" onchange="toggleDelivery(this.value)">
+          <option value="">Select Method</option>
+          <option value="self">Self Pickup Only</option>
+          <option value="delivery">Delivery Available</option>
+          <option value="both">Both (Self Pickup & Delivery)</option>
+        </select>
+      </div>
+
+      <div class="field delivery-extra" id="deliveryCharge">
+        <label>Delivery Charges <span class="req">*</span></label>
+        <div class="input-prefix">
+          <span>₹</span>
+          <input type="number" id="deliveryCharges" name="delivery_charges" placeholder="0" min="0">
+        </div>
+      </div>
+
+      <div class="field delivery-extra" id="deliveryRadiusField">
+        <label>Delivery Radius <span class="req">*</span></label>
+        <div class="input-prefix">
+          <span style="font-size:11px;font-family:'Montserrat',sans-serif;">km</span>
+          <input type="number" id="deliveryRadius" name="delivery_radius" placeholder="e.g. 10" min="1" style="padding-left:38px">
+        </div>
+      </div>
+
+      <div class="field span-2">
+        <label>Item Location for Pickup <span class="req">*</span></label>
+        <input type="text" id="itemLocation" name="item_location" placeholder="e.g. Pune, Maharashtra">
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <span></span>
+      <button class="btn btn-primary" onclick="goToStep(2)">Next: Condition & Disclosure →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Condition & Disclosure -->
+  <div class="section-card" id="step-2">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Condition & Disclosure</div>
+        <div class="section-desc">Honest disclosure protects you from disputes. Renters appreciate transparency.</div>
+      </div>
+    </div>
+
+    <div class="form-grid cols-1">
+      <div class="field">
+        <label>Known Defects <span class="req">*</span></label>
+        <textarea id="knownDefects" name="description" placeholder="Describe any defects honestly.&#10;e.g. Small scratch on body, battery drains fast, minor noise in motor&#10;&#10;Type 'None' if the item has no defects."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Maintenance History <span class="req">*</span></label>
+        <select id="maintenance" name="maintenance">
+          <option value="">Select</option>
+          <option>Recently Serviced</option>
+          <option>Serviced within 1 year</option>
+          <option>Never Serviced</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Accessories Included <span class="req">*</span></label>
+        <textarea id="accessories" name="rules" placeholder="List all accessories included.&#10;e.g. Charger, cables, bag, stand, remote&#10;&#10;Type 'None' if no accessories are included." style="min-height:70px;"></textarea>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(3)">Next: Media Proof →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Media Proof -->
+  <div class="section-card" id="step-3">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Proof Media</div>
+        <div class="section-desc">Minimum 3 images and 1 working-condition video required. This protects both you and the renter.</div>
+      </div>
+    </div>
+
+    <div class="form-grid cols-1">
+      <div class="field">
+        <label>Item Images <span class="req">*</span> <span class="hint" style="display:inline;">— minimum 3 (front, side, back)</span></label>
+        <div class="upload-zone">
+          <input type="file" id="itemImages" name="images" accept="image/*" multiple onchange="handleImages(this)">
+          <div class="upload-icon">📷</div>
+          <div class="upload-label">Click to upload images</div>
+          <div class="upload-sub">JPG, PNG, WEBP · Max 5MB each · Minimum 3 required</div>
+        </div>
+        <div class="file-previews" id="imagePreviews"></div>
+      </div>
+
+      <div class="field">
+        <label>Working Condition Video <span class="req">*</span></label>
+        <div class="upload-zone">
+          <input type="file" id="itemVideo" accept="video/*" onchange="handleVideo(this)">
+          <div class="upload-icon">🎥</div>
+          <div class="upload-label">Click to upload video</div>
+          <div class="upload-sub">MP4, MOV · 10–30 seconds · Show item powered on and functioning</div>
+        </div>
+        <div class="video-preview" id="videoPreview"></div>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(4)">Next: Declaration →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Legal Declaration -->
+  <div class="section-card" id="step-4">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Legal Declaration</div>
+        <div class="section-desc">You must agree to all declarations before listing. These protect all parties on the platform.</div>
+      </div>
+    </div>
+
+    <div class="checkbox-list" id="declarationList">
+      <label class="check-item" onclick="toggleCheck(this)">
+        <input type="checkbox" name="declaration">
+        <span class="check-text">I confirm this item legally belongs to me and I have full authority to rent it out.</span>
+      </label>
+      <label class="check-item" onclick="toggleCheck(this)">
+        <input type="checkbox" name="declaration">
+        <span class="check-text">I confirm all defects and condition details have been honestly declared.</span>
+      </label>
+      <label class="check-item" onclick="toggleCheck(this)">
+        <input type="checkbox" name="declaration">
+        <span class="check-text">I agree that false declarations may lead to penalty, listing suspension, or account termination.</span>
+      </label>
+      <label class="check-item" onclick="toggleCheck(this)">
+        <input type="checkbox" name="declaration">
+        <span class="check-text">I understand that deposit disputes will be resolved using photographic and video evidence provided at pickup and return.</span>
+      </label>
+      <label class="check-item" onclick="toggleCheck(this)">
+        <input type="checkbox" name="declaration">
+        <span class="check-text">I agree that both borrower and lender must upload pickup proof before the rental is officially activated.</span>
+      </label>
+      <label class="check-item" onclick="toggleCheck(this)">
+        <input type="checkbox" name="declaration">
+        <span class="check-text">I accept the platform commission structure and payout schedule as described in the Lender Agreement.</span>
+      </label>
+      <!-- ── Paste this AFTER the closing </div> of #declarationList, BEFORE .nav-buttons in Step 4 ── -->
+
+<div style="margin-top: 1.5rem; padding: 1rem 1.2rem; background: #e8f5f0; border: 1.5px solid rgba(25,63,52,0.15); border-radius: 10px; display: flex; align-items: flex-start; gap: 12px;">
+  <input
+    type="checkbox"
+    id="termsCheck"
+    style="width:18px; height:18px; accent-color:#193f34; flex-shrink:0; margin-top:2px; cursor:pointer;"
+  >
+  <label for="termsCheck" style="font-size:13px; font-family:'Montserrat',sans-serif; font-weight:500; color:#1a1a1a; line-height:1.6; cursor:pointer;">
+    I agree to the
+    <a href="terms.html" target="_blank"
+       style="color:#193f34; font-weight:700; text-decoration:underline; text-underline-offset:3px;">
+      Terms &amp; Conditions
+    </a>
+    of ShareSphere. I understand that listing an item constitutes a binding agreement with the platform and with renters.
+  </label>
+</div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="goToStep(3)">← Back</button>
+      <button class="btn btn-primary" onclick="goToStep(5)">Next: Trust Features →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5: Trust & Extras -->
+  <div class="section-card" id="step-5">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Trust & Optional Details</div>
+        <div class="section-desc">These are optional but significantly increase renter confidence and booking rate.</div>
+      </div>
+    </div>
+
+    <div class="optional-badge">✦ Recommended — not required</div>
+
+    <div class="form-grid">
+      <div class="field span-2">
+        <label>Upload Original Purchase Invoice <span class="opt">(optional)</span></label>
+        <div class="upload-zone" style="padding:18px 20px;">
+          <input type="file" id="invoice" name="invoice" accept="image/*,application/pdf">
+          <div class="upload-icon" style="font-size:20px;">🧾</div>
+          <div class="upload-label" style="font-size:13px;">Upload invoice / receipt</div>
+          <div class="upload-sub">Image or PDF · Increases trust score</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Warranty Status <span class="opt">(optional)</span></label>
+        <select id="warrantyStatus" name="warranty_status">
+          <option value="">Select</option>
+          <option>Under Manufacturer Warranty</option>
+          <option>Warranty Expired</option>
+          <option>Extended Warranty Active</option>
+          <option>No Warranty</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Warranty Expiry Date <span class="opt">(optional)</span></label>
+        <input type="text" id="warrantyExpiry" name="warranty_expiry" placeholder="e.g. December 2026">
+      </div>
+
+      <div class="field">
+        <label>Insurance Available <span class="opt">(optional)</span></label>
+        <select id="insurance" name="insurance">
+          <option value="">Select</option>
+          <option value="yes">Yes — item is insured</option>
+          <option value="no">No — not insured</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="btn btn-secondary" onclick="goToStep(4)">← Back</button>
+      <button class="btn btn-primary btn-submit" id="submitBtn" onclick="submitListing()">
+        Submit Listing
+      </button>
+    </div>
+
+    <p id="form-error"></p>
+  </div>
+
+</div>
+
+<script>
+  let currentStep = 1;
+  const totalSteps = 5;
+
+  function goToStep(n) {
+    if (n > currentStep && !validateStep(currentStep)) return;
+    document.getElementById(`step-${currentStep}`).classList.remove("active");
+    document.querySelectorAll(".step").forEach(s => {
+      const sn = parseInt(s.dataset.step);
+      s.classList.remove("active", "done");
+      if (sn === n) s.classList.add("active");
+      if (sn < n) s.classList.add("done");
+    });
+    currentStep = n;
+    document.getElementById(`step-${currentStep}`).classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function validateStep(step) {
+    if (step === 3) {
+      const video = document.getElementById("itemVideo").files;
+      if (selectedImages.length < 3) { alert("Please upload at least 3 item images."); return false; }
+      if (video.length === 0) { alert("Please upload a working condition video."); return false; }
+      return true;
+    }
+
+    if (step === 4) {
+      const boxes = document.querySelectorAll('#declarationList input[type="checkbox"]');
+      const allChecked = [...boxes].every(b => b.checked);
+      if (!allChecked) { alert("Please agree to all declarations before continuing."); return false; }
+      return true;
+    }
+
+    const requiredFields = {
+      1: ["itemTitle","category","brand","modelNumber","itemAge","condition","purchasePrice","rentPrice","deposit","minDuration","maxDuration","pickupMethod","itemLocation"],
+      2: ["knownDefects","maintenance","accessories"],
+      5: []
+    };
+
+    const fields = requiredFields[step] || [];
+    for (const id of fields) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      if (!el.value.trim()) {
+        el.classList.add("error");
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.focus();
+        const labelText = el.closest(".field")?.querySelector("label")?.childNodes[0]?.textContent?.trim() || id;
+        alert(`Please fill in: ${labelText}`);
+        return false;
+      }
+      el.classList.remove("error");
+    }
+
+    if (step === 1) {
+      const pm = document.getElementById("pickupMethod").value;
+      if (pm === "delivery" || pm === "both") {
+        if (!document.getElementById("deliveryCharges").value) { alert("Please enter delivery charges."); return false; }
+        if (!document.getElementById("deliveryRadius").value) { alert("Please enter delivery radius."); return false; }
+      }
+    }
+
+    return true;
+  }
+
+  function toggleDelivery(val) {
+    const show = val === "delivery" || val === "both";
+    document.getElementById("deliveryCharge").classList.toggle("visible", show);
+    document.getElementById("deliveryRadiusField").classList.toggle("visible", show);
+  }
+
+  let selectedImages = [];
+
+  function handleImages(input) {
+    const newFiles = [...input.files];
+    selectedImages = [...selectedImages, ...newFiles];
+    input.value = "";
+    renderImagePreviews();
+  }
+
+  function renderImagePreviews() {
+    const container = document.getElementById("imagePreviews");
+    container.innerHTML = "";
+    selectedImages.forEach((file, i) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const div = document.createElement("div");
+        div.className = "file-preview-item";
+        div.innerHTML = `<img src="${e.target.result}" alt="Preview ${i+1}">
+          <button class="remove-file" type="button" onclick="removeImage(${i})">×</button>`;
+        container.appendChild(div);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function removeImage(index) {
+    selectedImages.splice(index, 1);
+    renderImagePreviews();
+  }
+
+  function handleVideo(input) {
+    const preview = document.getElementById("videoPreview");
+    if (input.files.length > 0) {
+      preview.style.display = "block";
+      preview.textContent = "✓ Video selected: " + input.files[0].name;
+    } else {
+      preview.style.display = "none";
+    }
+  }
+
+  function toggleCheck(label) {
+    const cb = label.querySelector("input");
+    setTimeout(() => label.classList.toggle("checked", cb.checked), 0);
+  }
+
+  async function submitListing() {
+    const email = localStorage.getItem("loggedInUser");
+    if (!email) {
+      alert("Session expired. Please log in again.");
+      return window.location.href = "login.html";
+    }
+
+    const submitBtn = document.getElementById("submitBtn");
+    const errorEl   = document.getElementById("form-error");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Uploading…";
+    errorEl.style.display = "none";
+    errorEl.textContent = "";
+
+    const formData = new FormData();
+
+    formData.append("title",          document.getElementById("itemTitle").value.trim());
+    formData.append("category",       document.getElementById("category").value);
+    formData.append("description",    document.getElementById("knownDefects").value.trim());
+    // CHANGED: now sends price_per_month instead of price_per_day
+    const rentPrice = document.getElementById("rentPrice").value;
+formData.append("price_per_month", rentPrice);
+formData.append("price_per_day", rentPrice);   // keeps backend happy until you update it
+    formData.append("condition",      document.getElementById("condition").value);
+    formData.append("rules",          document.getElementById("accessories").value.trim());
+    formData.append("owner_email",    email);
+
+    formData.append("brand",           document.getElementById("brand").value.trim());
+    formData.append("model_number",    document.getElementById("modelNumber").value.trim());
+    formData.append("serial_number",   document.getElementById("serialNumber").value.trim());
+    formData.append("item_age",        document.getElementById("itemAge").value);
+    formData.append("purchase_price",  document.getElementById("purchasePrice").value);
+    formData.append("deposit",         document.getElementById("deposit").value);
+    formData.append("min_duration",    document.getElementById("minDuration").value);
+    formData.append("max_duration",    document.getElementById("maxDuration").value);
+    formData.append("pickup_method",   document.getElementById("pickupMethod").value);
+    formData.append("item_location",   document.getElementById("itemLocation").value.trim());
+    formData.append("maintenance",     document.getElementById("maintenance").value);
+    formData.append("warranty_status", document.getElementById("warrantyStatus").value);
+    formData.append("warranty_expiry", document.getElementById("warrantyExpiry").value.trim());
+    formData.append("insurance",       document.getElementById("insurance").value);
+
+    const pm = document.getElementById("pickupMethod").value;
+    if (pm === "delivery" || pm === "both") {
+      formData.append("delivery_charges", document.getElementById("deliveryCharges").value);
+      formData.append("delivery_radius",  document.getElementById("deliveryRadius").value);
+    }
+
+    selectedImages.forEach(f => formData.append("images", f));
+
+    const videoFile = document.getElementById("itemVideo").files[0];
+    if (videoFile) formData.append("video", videoFile);
+
+    const invoiceFile = document.getElementById("invoice").files[0];
+    if (invoiceFile) formData.append("invoice", invoiceFile);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/items/create", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        window.location.href = "item-uploaded.html";
+      } else {
+        throw new Error(data.error || data.message || "Submission failed. Please try again.");
+      }
+
+    } catch (err) {
+      console.error("Submit error:", err);
+      errorEl.textContent = err.message;
+      errorEl.style.display = "block";
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit Listing";
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Item — ShareSphere</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f5f9f7;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      background: #193f34;
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 22px;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .nav-back {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      opacity: 0.8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-back:hover { opacity: 1; }
+
+    /* ── Page layout ── */
+    .page {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #193f34;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    /* ── Two-column layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    @media (max-width: 700px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e0ede8;
+      padding: 28px;
+    }
+
+    .card h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #193f34;
+      margin-bottom: 20px;
+    }
+
+    /* ── Calendar ── */
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .cal-header span {
+      font-weight: 600;
+      font-size: 15px;
+      color: #193f34;
+    }
+    .cal-nav {
+      background: none;
+      border: 1px solid #d0e4da;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #193f34;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+    .cal-nav:hover { background: #f0f7f4; }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .cal-day-label {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #999;
+      padding: 4px 0 8px;
+      text-transform: uppercase;
+    }
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+      user-select: none;
+      position: relative;
+    }
+    .cal-day:hover:not(.disabled):not(.empty) {
+      background: #e8f4ef;
+      color: #193f34;
+    }
+    .cal-day.today { font-weight: 700; }
+    .cal-day.disabled {
+      color: #ccc;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+    .cal-day.empty { cursor: default; }
+    .cal-day.in-range {
+      background: #d4ede4;
+      border-radius: 0;
+    }
+    .cal-day.start-date,
+    .cal-day.end-date {
+      background: #193f34;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 600;
+      z-index: 1;
+    }
+    .cal-day.start-date.has-range { border-radius: 8px 0 0 8px; }
+    .cal-day.end-date.has-range   { border-radius: 0 8px 8px 0; }
+
+    .cal-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .cal-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #666;
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    /* ── Date inputs ── */
+    .date-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #193f34;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .input-group .date-display {
+      background: #f5f9f7;
+      border: 1px solid #d0e4da;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+      min-height: 42px;
+    }
+    .input-group .date-display.placeholder { color: #aaa; font-weight: 400; }
+
+    /* ── Availability status ── */
+    .availability-status {
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      display: none;
+    }
+    .availability-status.available {
+      background: #e8f5e9;
+      color: #2e7d32;
+      display: block;
+    }
+    .availability-status.unavailable {
+      background: #ffebee;
+      color: #c62828;
+      display: block;
+    }
+    .availability-status.checking {
+      background: #fff8e1;
+      color: #f57f17;
+      display: block;
+    }
+
+    /* ── Summary card ── */
+    .item-preview {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .item-preview img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+    .item-preview .item-info h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+    .item-preview .item-info p {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .price-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #444;
+    }
+    .price-row.total {
+      font-size: 16px;
+      font-weight: 700;
+      color: #193f34;
+      padding-top: 12px;
+      margin-top: 4px;
+      border-top: 1px solid #e0ede8;
+    }
+    .price-row .muted {
+      font-size: 12px;
+      color: #999;
+      font-weight: 400;
+    }
+
+    .empty-state {
+      color: #aaa;
+      font-size: 14px;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    /* ── CTA button ── */
+    .btn-book {
+      display: block;
+      width: 100%;
+      margin-top: 24px;
+      background: #193f34;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s, opacity 0.18s;
+      letter-spacing: 0.3px;
+    }
+    .btn-book:hover:not(:disabled) { background: #0f2920; }
+    .btn-book:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #193f34;
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.35s ease;
+      z-index: 999;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    #toast.error { background: #c62828; }
+
+    /* ── Success state ── */
+    #success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(25, 63, 52, 0.96);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+      padding: 40px;
+    }
+    #success-overlay.show { display: flex; }
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin-bottom: 24px;
+    }
+    #success-overlay h2 {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    #success-overlay p {
+      font-size: 15px;
+      opacity: 0.85;
+      max-width: 400px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    .success-amounts {
+      background: rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 20px 32px;
+      margin: 20px 0;
+      text-align: left;
+      min-width: 280px;
+    }
+    .success-amounts .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+      font-size: 14px;
+      padding: 4px 0;
+      opacity: 0.85;
+    }
+    .success-amounts .row.total {
+      font-weight: 700;
+      font-size: 17px;
+      padding-top: 12px;
+      margin-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.25);
+      opacity: 1;
+    }
+    .btn-home {
+      margin-top: 24px;
+      background: #fff;
+      color: #193f34;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 36px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">ShareSphere</a>
+  <a class="nav-back" id="backLink" href="item-details.html">← Back to item</a>
+</nav>
+
+<div class="page">
+  <h1>Book this item</h1>
+  <p class="subtitle">Pick your rental dates. No payment required yet — the lender will be notified.</p>
+
+  <div class="layout">
+
+    <!-- LEFT: Calendar -->
+    <div>
+      <div class="card">
+        <h2>Select dates</h2>
+
+        <div class="cal-header">
+          <button class="cal-nav" id="prevMonth">&#8249;</button>
+          <span id="monthLabel"></span>
+          <button class="cal-nav" id="nextMonth">&#8250;</button>
+        </div>
+
+        <div class="cal-grid" id="calGrid"></div>
+
+        <div class="cal-legend">
+          <div class="cal-legend-item">
+            <div class="legend-dot" style="background:#193f34"></div>
+            Selected
+          </div>
+          <div class="cal-legend-item">
+            <div class="legend-dot" style="background:#d4ede4"></div>
+            In range
+          </div>
+          <div class="cal-legend-item">
+            <div class="legend-dot" style="background:#e8e8e8"></div>
+            Unavailable
+          </div>
+        </div>
+
+        <div class="date-inputs">
+          <div class="input-group">
+            <label>Check-in</label>
+            <div class="date-display placeholder" id="displayStart">Select date</div>
+          </div>
+          <div class="input-group">
+            <label>Check-out</label>
+            <div class="date-display placeholder" id="displayEnd">Select date</div>
+          </div>
+        </div>
+
+        <div class="availability-status" id="availStatus"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Summary -->
+    <div>
+      <div class="card">
+        <h2>Booking summary</h2>
+
+        <div class="item-preview">
+          <img id="itemImage" src="" alt="item"/>
+          <div class="item-info">
+            <h3 id="itemTitle">Loading...</h3>
+            <p id="itemCategory"></p>
+          </div>
+        </div>
+
+        <div id="summaryBody">
+          <div class="empty-state">Choose your dates to see the price breakdown</div>
+        </div>
+
+        <button class="btn-book" id="btnBook" disabled>Select dates to continue</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div id="success-overlay">
+  <div class="success-icon">✓</div>
+  <h2>Booking request sent!</h2>
+  <p>The lender has been notified and will confirm your booking shortly.</p>
+  <div class="success-amounts" id="successAmounts"></div>
+  <p style="font-size:13px;opacity:0.65">Check your email for confirmation details.</p>
+  <button class="btn-home" onclick="window.location.href='index.html'">Browse more items</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  const params      = new URLSearchParams(window.location.search);
+  const itemId      = params.get('item_id') || sessionStorage.getItem('rentItemId');
+  const userEmail   = localStorage.getItem('loggedInUser');
+
+  let item          = null;
+  let blockedDates  = new Set();
+  let startDate     = null;
+  let endDate       = null;
+  let selectingEnd  = false;
+
+  let viewYear  = new Date().getFullYear();
+  let viewMonth = new Date().getMonth();
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  const fmt = d => {
+    const [y, m, day] = d.split('-');
+    return `${day}/${m}/${y}`;
+  };
+  const toDateStr = d => d.toISOString().split('T')[0];
+
+  const MONTHS = ['January','February','March','April','May','June',
+                  'July','August','September','October','November','December'];
+
+  function showToast(msg, error = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className   = 'show' + (error ? ' error' : '');
+    setTimeout(() => t.className = '', 3200);
+  }
+
+  // ── Load item ──────────────────────────────────────────────────────────────
+  async function loadItem() {
+    if (!itemId) { showToast('No item selected', true); return; }
+
+    try {
+      const res  = await fetch(`/api/items/${itemId}`);
+      item       = await res.json();
+
+      const paths = Array.isArray(item.image_paths)
+        ? item.image_paths
+        : (() => { try { return JSON.parse(item.image_paths); } catch { return []; } })();
+
+      document.getElementById('itemTitle').textContent    = item.title;
+      document.getElementById('itemCategory').textContent = item.category;
+      document.getElementById('itemImage').src =
+        paths.length ? `/uploads/${paths[0]}` : '';
+      document.getElementById('backLink').href = `item-details.html?id=${itemId}`;
+
+      document.title = `Book "${item.title}" — ShareSphere`;
+    } catch (e) {
+      showToast('Could not load item details', true);
+    }
+  }
+
+  // ── Load blocked dates ─────────────────────────────────────────────────────
+  async function loadBlockedDates() {
+    try {
+      const res  = await fetch(`/api/bookings/booked-dates/${itemId}`);
+      const data = await res.json();
+      blockedDates = new Set(data.blocked || []);
+      renderCalendar();
+    } catch (e) {
+      renderCalendar();
+    }
+  }
+
+  // ── Calendar ───────────────────────────────────────────────────────────────
+  function renderCalendar() {
+    const grid  = document.getElementById('calGrid');
+    const label = document.getElementById('monthLabel');
+    grid.innerHTML = '';
+    label.textContent = `${MONTHS[viewMonth]} ${viewYear}`;
+
+    const today    = toDateStr(new Date());
+    const days     = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+    days.forEach(d => {
+      const el = document.createElement('div');
+      el.className    = 'cal-day-label';
+      el.textContent  = d;
+      grid.appendChild(el);
+    });
+
+    const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+      const el = document.createElement('div');
+      el.className = 'cal-day empty';
+      grid.appendChild(el);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const el = document.createElement('div');
+      el.className  = 'cal-day';
+      el.textContent = d;
+
+      const isPast     = dateStr < today;
+      const isBlocked  = blockedDates.has(dateStr);
+
+      if (isPast || isBlocked) {
+        el.classList.add('disabled');
+      } else {
+        el.dataset.date = dateStr;
+        if (dateStr === today) el.classList.add('today');
+
+        if (startDate === dateStr) el.classList.add('start-date');
+        if (endDate   === dateStr) el.classList.add('end-date');
+
+        if (startDate && endDate && dateStr > startDate && dateStr < endDate) {
+          el.classList.add('in-range');
+        }
+        if (startDate && dateStr > startDate) el.classList.add('has-range');
+        if (endDate   && dateStr < endDate)   el.classList.add('has-range');
+
+        el.addEventListener('click', () => onDayClick(dateStr));
+      }
+
+      grid.appendChild(el);
+    }
+  }
+
+  function onDayClick(dateStr) {
+    if (!startDate || (startDate && endDate) || dateStr < startDate) {
+      // Start fresh
+      startDate = dateStr;
+      endDate   = null;
+      selectingEnd = true;
+    } else {
+      // Check no blocked dates in range
+      const s = new Date(startDate), e = new Date(dateStr);
+      let cur = new Date(s);
+      cur.setDate(cur.getDate() + 1);
+      let blocked = false;
+      while (cur < e) {
+        if (blockedDates.has(toDateStr(cur))) { blocked = true; break; }
+        cur.setDate(cur.getDate() + 1);
+      }
+      if (blocked) {
+        showToast('Range includes unavailable dates — pick a different end date', true);
+        return;
+      }
+      endDate      = dateStr;
+      selectingEnd = false;
+    }
+
+    updateDateDisplays();
+    renderCalendar();
+    updateSummary();
+    checkAvailability();
+  }
+
+  function updateDateDisplays() {
+    const s = document.getElementById('displayStart');
+    const e = document.getElementById('displayEnd');
+
+    if (startDate) {
+      s.textContent = fmt(startDate);
+      s.classList.remove('placeholder');
+    } else {
+      s.textContent = 'Select date';
+      s.classList.add('placeholder');
+    }
+
+    if (endDate) {
+      e.textContent = fmt(endDate);
+      e.classList.remove('placeholder');
+    } else {
+      e.textContent = selectingEnd ? 'Pick end date' : 'Select date';
+      e.classList.toggle('placeholder', true);
+    }
+  }
+
+  // ── Availability check ─────────────────────────────────────────────────────
+  let availTimer = null;
+  async function checkAvailability() {
+    if (!startDate || !endDate) return;
+    const status = document.getElementById('availStatus');
+    status.className = 'availability-status checking';
+    status.textContent = 'Checking availability…';
+
+    clearTimeout(availTimer);
+    availTimer = setTimeout(async () => {
+      try {
+        const res  = await fetch('/api/bookings/check-availability', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ item_id: itemId, start_date: startDate, end_date: endDate }),
+        });
+        const data = await res.json();
+
+        if (data.available) {
+          status.className  = 'availability-status available';
+          status.textContent = '✓ Dates are available!';
+          document.getElementById('btnBook').disabled = false;
+          document.getElementById('btnBook').textContent = 'Confirm booking request';
+        } else {
+          status.className  = 'availability-status unavailable';
+          status.textContent = '✗ These dates overlap with an existing booking — pick different dates';
+          document.getElementById('btnBook').disabled = true;
+          document.getElementById('btnBook').textContent = 'Dates unavailable';
+        }
+      } catch (e) {
+        status.className  = '';
+        status.textContent = '';
+      }
+    }, 400);
+  }
+
+  // ── Price summary ──────────────────────────────────────────────────────────
+  function updateSummary() {
+    const body = document.getElementById('summaryBody');
+    if (!startDate || !endDate || !item) {
+      body.innerHTML = '<div class="empty-state">Choose your dates to see the price breakdown</div>';
+      return;
+    }
+
+    const totalDays     = Math.round((new Date(endDate) - new Date(startDate)) / 86400000) + 1;
+    const rent          = item.price_per_day * totalDays;
+    const platformFee   = Math.round(rent * 0.10 * 100) / 100;
+    const deposit       = Math.round(rent * 0.20 * 100) / 100;
+    const totalPayable  = Math.round((rent + platformFee + deposit) * 100) / 100;
+
+    body.innerHTML = `
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>₹${item.price_per_day.toLocaleString('en-IN')} × ${totalDays} day${totalDays > 1 ? 's' : ''}</span>
+          <span>₹${rent.toLocaleString('en-IN')}</span>
+        </div>
+        <div class="price-row">
+          <span>Platform fee <span class="muted">(10%)</span></span>
+          <span>₹${platformFee.toLocaleString('en-IN')}</span>
+        </div>
+        <div class="price-row">
+          <span>Refundable deposit <span class="muted">(20%)</span></span>
+          <span>₹${deposit.toLocaleString('en-IN')}</span>
+        </div>
+        <div class="price-row total">
+          <span>Total payable</span>
+          <span>₹${totalPayable.toLocaleString('en-IN')}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // ── Confirm booking ────────────────────────────────────────────────────────
+  document.getElementById('btnBook').addEventListener('click', async () => {
+    if (!startDate || !endDate) return;
+    if (!userEmail) { window.location.href = 'login.html'; return; }
+
+    const btn = document.getElementById('btnBook');
+    btn.disabled   = true;
+    btn.textContent = 'Sending request…';
+
+    try {
+      const res  = await fetch('/api/bookings/create', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          item_id:        itemId,
+          borrower_email: userEmail,
+          start_date:     startDate,
+          end_date:       endDate,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || 'Booking failed', true);
+        btn.disabled   = false;
+        btn.textContent = 'Confirm booking request';
+        return;
+      }
+
+      // Show success overlay
+      document.getElementById('successAmounts').innerHTML = `
+        <div class="row"><span>Rent (${data.total_days} days)</span><span>₹${Number(data.rent_amount).toLocaleString('en-IN')}</span></div>
+        <div class="row"><span>Platform fee</span><span>₹${Number(data.platform_fee).toLocaleString('en-IN')}</span></div>
+        <div class="row"><span>Refundable deposit</span><span>₹${Number(data.deposit_amount).toLocaleString('en-IN')}</span></div>
+        <div class="row total"><span>Total payable</span><span>₹${Number(data.total_payable).toLocaleString('en-IN')}</span></div>
+      `;
+      document.getElementById('success-overlay').classList.add('show');
+      sessionStorage.removeItem('rentItemId');
+
+    } catch (e) {
+      showToast('Network error — please try again', true);
+      btn.disabled   = false;
+      btn.textContent = 'Confirm booking request';
+    }
+  });
+
+  // ── Month nav ──────────────────────────────────────────────────────────────
+  document.getElementById('prevMonth').addEventListener('click', () => {
+    const now = new Date();
+    if (viewYear === now.getFullYear() && viewMonth === now.getMonth()) return;
+    viewMonth--;
+    if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+    renderCalendar();
+  });
+  document.getElementById('nextMonth').addEventListener('click', () => {
+    viewMonth++;
+    if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+    renderCalendar();
+  });
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  if (!userEmail) window.location.href = 'login.html';
+  (async () => {
+    await loadItem();
+    await loadBlockedDates();
+  })();
+</script>
+</body>
+</html>

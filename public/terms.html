@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Terms & Conditions – ShareSphere</title>
+  <link rel="icon" href="css/assets/logo1.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --forest: #193f34;
+      --forest-deep: #0d271f;
+      --forest-light: #2a6652;
+      --mint: #c8ebe0;
+      --mint-soft: #e8f5f0;
+      --cream: #faf8f3;
+      --white: #ffffff;
+      --ink: #1a1a1a;
+      --muted: #6b7280;
+      --border: #e2e8e4;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--forest);
+      padding: 0 2.5rem; height: 62px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 16px rgba(25,63,52,0.2);
+    }
+    .nav-brand {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700; font-size: 1.25rem;
+      color: var(--white); text-decoration: none; letter-spacing: 0.04em;
+    }
+    .nav-back {
+      display: flex; align-items: center; gap: 0.4rem;
+      color: rgba(255,255,255,0.7); font-size: 0.88rem;
+      font-weight: 500; text-decoration: none; transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+
+    .hero {
+      background: var(--forest);
+      padding: 4rem 2.5rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 60% 0%, rgba(200,235,224,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--mint); margin-bottom: 1rem;
+      border: 1px solid rgba(200,235,224,0.3);
+      padding: 0.3rem 1rem; border-radius: 999px;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700; color: var(--white);
+      line-height: 1.15; margin-bottom: 1rem;
+    }
+    .hero-sub {
+      font-size: 0.9rem; color: rgba(255,255,255,0.55);
+      font-weight: 400; max-width: 480px; margin: 0 auto;
+      line-height: 1.7;
+    }
+    .hero-date {
+      margin-top: 1.5rem;
+      font-size: 0.78rem; color: rgba(255,255,255,0.4);
+      font-weight: 500; letter-spacing: 0.05em;
+    }
+
+    .page-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+    @media (max-width: 720px) {
+      .page-wrap { grid-template-columns: 1fr; gap: 2rem; }
+      .toc { display: none; }
+    }
+
+    .toc {
+      position: sticky; top: 80px;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 1.2rem 1.4rem;
+      box-shadow: 0 2px 12px rgba(25,63,52,0.06);
+    }
+    .toc-title {
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1rem;
+    }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 0.1rem; }
+    .toc-list a {
+      display: block;
+      font-size: 0.78rem; font-weight: 500;
+      color: var(--muted); text-decoration: none;
+      padding: 0.35rem 0.6rem; border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+      line-height: 1.4;
+    }
+    .toc-list a:hover { background: var(--mint-soft); color: var(--forest); }
+
+    .content { display: flex; flex-direction: column; gap: 0; }
+
+    .tc-section {
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border);
+      animation: fadeUp 0.5s ease both;
+    }
+    .tc-section:first-child { padding-top: 0; }
+    .tc-section:last-child { border-bottom: none; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-number {
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--forest); opacity: 0.5;
+      margin-bottom: 0.4rem;
+    }
+    .section-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem; font-weight: 600;
+      color: var(--forest); margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+    .section-body {
+      font-size: 0.88rem; line-height: 1.85;
+      color: #3d3d3d; font-weight: 400;
+    }
+    .section-body p { margin-bottom: 0.85rem; }
+    .section-body p:last-child { margin-bottom: 0; }
+
+    .highlight-box {
+      background: var(--mint-soft);
+      border-left: 3px solid var(--forest);
+      border-radius: 0 10px 10px 0;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+      font-size: 0.86rem;
+      color: var(--forest);
+      font-weight: 500;
+      line-height: 1.6;
+    }
+
+    .tc-list {
+      list-style: none;
+      display: flex; flex-direction: column; gap: 0.55rem;
+      margin: 0.75rem 0;
+    }
+    .tc-list li {
+      display: flex; align-items: flex-start; gap: 0.7rem;
+      font-size: 0.88rem; line-height: 1.65; color: #3d3d3d;
+    }
+    .tc-list li::before {
+      content: '';
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--forest); opacity: 0.45;
+      flex-shrink: 0; margin-top: 0.5em;
+    }
+
+    .agreement-banner {
+      background: var(--forest);
+      border-radius: 16px;
+      padding: 2rem 2.5rem;
+      margin-top: 2.5rem;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(25,63,52,0.2);
+    }
+    .agreement-banner h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; color: var(--white);
+      margin-bottom: 0.6rem;
+    }
+    .agreement-banner p {
+      font-size: 0.83rem; color: rgba(255,255,255,0.55);
+      line-height: 1.6; margin-bottom: 1.4rem;
+    }
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--mint); color: var(--forest);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.88rem; font-weight: 700;
+      padding: 0.75rem 2rem; border-radius: 10px;
+      text-decoration: none; letter-spacing: 0.02em;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-back:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/index.html" class="nav-brand">ShareSphere</a>
+  <a href="javascript:history.back()" class="nav-back">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Go Back
+  </a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Legal</div>
+  <h1 class="hero-title">Terms &amp; Conditions</h1>
+  <p class="hero-sub">Please read these terms carefully before listing or renting any item on ShareSphere.</p>
+  <div class="hero-date">Effective Date: 1st June 2025 &nbsp;·&nbsp; Last Updated: May 2026</div>
+</div>
+
+<div class="page-wrap">
+
+  <aside class="toc">
+    <div class="toc-title">Contents</div>
+    <ul class="toc-list">
+      <li><a href="#s1">1. About ShareSphere</a></li>
+      <li><a href="#s2">2. Eligibility</a></li>
+      <li><a href="#s3">3. Lender Obligations</a></li>
+      <li><a href="#s4">4. Borrower Obligations</a></li>
+      <li><a href="#s5">5. Communication &amp; Contact</a></li>
+      <li><a href="#s6">6. Prohibited Items</a></li>
+      <li><a href="#s7">7. Account Suspension</a></li>
+      <li><a href="#s8">8. Limitation of Liability</a></li>
+      <li><a href="#s9">9. Privacy</a></li>
+      <li><a href="#s10">10. Changes to Terms</a></li>
+      <li><a href="#s11">11. Contact Us</a></li>
+    </ul>
+  </aside>
+
+  <div class="content">
+
+    <div class="tc-section" id="s1">
+      <div class="section-number">Section 01</div>
+      <h2 class="section-heading">About ShareSphere</h2>
+      <div class="section-body">
+        <p>ShareSphere is a peer-to-peer item rental discovery platform that connects lenders (item owners) with borrowers (renters) across India. ShareSphere acts solely as a directory and communication bridge — we do not own, inspect, take physical possession of, or handle payments for any listed item.</p>
+        <p>All rental agreements, payments, and transactions are conducted directly between lenders and borrowers. ShareSphere is not a party to any such arrangement.</p>
+        <p>By registering on ShareSphere — whether as a lender or borrower — you agree to be bound by these Terms &amp; Conditions in full. If you do not agree, you must not use the platform.</p>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s2">
+      <div class="section-number">Section 02</div>
+      <h2 class="section-heading">Eligibility</h2>
+      <div class="section-body">
+        <p>To use ShareSphere you must:</p>
+        <ul class="tc-list">
+          <li>Be at least 18 years of age</li>
+          <li>Be a resident of India with a valid government-issued ID</li>
+          <li>Complete identity verification through the platform before listing or contacting lenders</li>
+          <li>Provide accurate and truthful personal information during registration</li>
+        </ul>
+        <p>ShareSphere reserves the right to reject or revoke access to any account that does not meet eligibility requirements.</p>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s3">
+      <div class="section-number">Section 03</div>
+      <h2 class="section-heading">Lender Obligations</h2>
+      <div class="section-body">
+        <p>As a lender on ShareSphere, you agree to:</p>
+        <ul class="tc-list">
+          <li>Only list items that you legally own or have explicit authority to rent out</li>
+          <li>Accurately describe the item's condition, defects, and included accessories</li>
+          <li>Provide a minimum of 3 clear photographs and 1 working-condition video for every listing</li>
+          <li>Respond promptly to borrower enquiries received via the contact details you provide</li>
+          <li>Honour agreements made with borrowers through the platform</li>
+          <li>Keep your listing details (availability, price, condition) up to date</li>
+        </ul>
+        <div class="highlight-box">
+          False or misleading item descriptions are grounds for immediate listing removal and account suspension.
+        </div>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s4">
+      <div class="section-number">Section 04</div>
+      <h2 class="section-heading">Borrower Obligations</h2>
+      <div class="section-body">
+        <p>As a borrower on ShareSphere, you agree to:</p>
+        <ul class="tc-list">
+          <li>Contact lenders only for genuine rental enquiries related to the listed item</li>
+          <li>Use the rented item only for its intended and lawful purpose</li>
+          <li>Return the item on the agreed date and time in the same condition as received</li>
+          <li>Not sub-rent, lend, or transfer the item to any third party</li>
+          <li>Not tamper with, modify, or disassemble the item in any way</li>
+          <li>Resolve any payment, damage, or return disputes directly with the lender</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s5">
+      <div class="section-number">Section 05</div>
+      <h2 class="section-heading">Communication &amp; Contact</h2>
+      <div class="section-body">
+        <p>ShareSphere facilitates the initial connection between lenders and borrowers by sharing contact details (phone and email) once both parties have verified accounts. All further communication, negotiation, and agreement happens directly between the two parties.</p>
+        <ul class="tc-list">
+          <li>Contact details are shared only after both parties have completed identity verification</li>
+          <li>You must not use contact details obtained through ShareSphere for spam, harassment, or any purpose unrelated to the rental</li>
+          <li>ShareSphere is not responsible for the outcome of any communication or deal made between users</li>
+          <li>All payments, deposits, and pricing terms are agreed directly between lender and borrower</li>
+        </ul>
+        <div class="highlight-box">
+          ShareSphere does not mediate, arbitrate, or guarantee any rental arrangement. Users transact entirely at their own discretion and risk.
+        </div>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s6">
+      <div class="section-number">Section 06</div>
+      <h2 class="section-heading">Prohibited Items</h2>
+      <div class="section-body">
+        <p>The following items are strictly prohibited from being listed on ShareSphere:</p>
+        <ul class="tc-list">
+          <li>Weapons, firearms, ammunition, or any item that can cause bodily harm</li>
+          <li>Illegal substances, narcotics, or drug paraphernalia</li>
+          <li>Stolen, counterfeit, or items with tampered serial numbers</li>
+          <li>Adult content or sexually explicit material</li>
+          <li>Live animals or perishable goods</li>
+          <li>Items that violate any applicable Indian law or regulation</li>
+          <li>Personal identification documents or financial instruments</li>
+        </ul>
+        <p>Listing a prohibited item will result in immediate account termination and may be reported to relevant authorities.</p>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s7">
+      <div class="section-number">Section 07</div>
+      <h2 class="section-heading">Account Suspension &amp; Termination</h2>
+      <div class="section-body">
+        <p>ShareSphere reserves the right to suspend or permanently terminate any account under the following circumstances:</p>
+        <ul class="tc-list">
+          <li>Providing false information during registration or in a listing</li>
+          <li>Using contact details of other users for spam, harassment, or unrelated solicitation</li>
+          <li>Listing prohibited items</li>
+          <li>Abusive, threatening, or fraudulent behaviour toward other users</li>
+          <li>Any activity that violates these Terms &amp; Conditions</li>
+        </ul>
+        <p>Terminated accounts lose all platform privileges permanently.</p>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s8">
+      <div class="section-number">Section 08</div>
+      <h2 class="section-heading">Limitation of Liability</h2>
+      <div class="section-body">
+        <p>ShareSphere is a discovery and connection platform only. We are not a party to any rental agreement between users and have no involvement in the exchange of money, goods, or services between lenders and borrowers.</p>
+        <ul class="tc-list">
+          <li>ShareSphere is not liable for any loss, damage, theft, injury, or financial dispute arising from a rental</li>
+          <li>We do not guarantee the accuracy of item descriptions provided by lenders</li>
+          <li>We are not responsible for any direct, indirect, or consequential losses suffered by users</li>
+          <li>Users are solely responsible for verifying the identity, credibility, and item condition before transacting</li>
+        </ul>
+        <p>Users are strongly encouraged to exercise their own due diligence before entering into any rental arrangement.</p>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s9">
+      <div class="section-number">Section 09</div>
+      <h2 class="section-heading">Privacy Policy</h2>
+      <div class="section-body">
+        <p>ShareSphere collects personal data (name, phone, email, ID documents, address) strictly for the purpose of operating the platform and verifying user identity.</p>
+        <ul class="tc-list">
+          <li>Your personal data is never sold to third parties</li>
+          <li>Contact details are shared between lender and borrower only after both have verified accounts and mutual interest is confirmed</li>
+          <li>ID documents are used solely for identity verification and stored securely</li>
+          <li>You may request deletion of your account and associated data at any time</li>
+        </ul>
+        <p>By using ShareSphere, you consent to the collection and use of your data as described above, in accordance with the Information Technology Act, 2000 and applicable Indian data protection laws.</p>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s10">
+      <div class="section-number">Section 10</div>
+      <h2 class="section-heading">Changes to These Terms</h2>
+      <div class="section-body">
+        <p>ShareSphere reserves the right to modify these Terms &amp; Conditions at any time. When changes are made:</p>
+        <ul class="tc-list">
+          <li>Registered users will be notified via email at least 14 days before changes take effect</li>
+          <li>The "Last Updated" date at the top of this page will be revised</li>
+          <li>Continued use of the platform after the effective date constitutes acceptance of the revised terms</li>
+        </ul>
+        <p>If you disagree with any change, you must stop using ShareSphere before the effective date of the revision.</p>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s11">
+      <div class="section-number">Section 11</div>
+      <h2 class="section-heading">Contact Us</h2>
+      <div class="section-body">
+        <p>If you have any questions, concerns, or feedback regarding these Terms &amp; Conditions, please reach out to our support team:</p>
+        <ul class="tc-list">
+          <li>Email: <strong>support@sharesphere.in</strong></li>
+          <li>Response time: Within 2 business days</li>
+        </ul>
+        <p>These Terms &amp; Conditions are governed by and construed in accordance with the laws of India. Any disputes arising shall be subject to the exclusive jurisdiction of the courts of Mumbai, Maharashtra.</p>
+      </div>
+    </div>
+
+    <div class="agreement-banner">
+      <h3>Ready to list your item?</h3>
+      <p>By proceeding with your listing you confirm that you have read, understood, and agree to all of the above Terms &amp; Conditions.</p>
+      <a href="javascript:history.back()" class="btn-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Listing Form
+      </a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

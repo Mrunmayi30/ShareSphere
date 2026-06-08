@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<link rel="stylesheet" href="login.css">
+<link rel="icon" href="css/assets/logo1.png">
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Log in to ShareSphere</h2>
+
+<form id="loginForm">
+
+<label for="email">Email</label>
+<input type="email" id="email" placeholder="Enter your email" required>
+
+<label for="password">Password</label>
+<input type="password" id="password" placeholder="Enter your password" required>
+
+<button type="submit">Continue</button>
+
+<p class="signup-link">
+Don't have an account?
+<a href="register.html">Create account</a>
+</p>
+
+</form>
+
+</div>
+
+<script>
+    console.log("Login script loaded");
+</script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+document.getElementById("loginForm").addEventListener("submit", async function(e){
+
+e.preventDefault();
+
+console.log("FORM SUBMITTED");
+
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+
+try{
+
+console.log("Sending request...");
+
+const res = await fetch("/api/auth/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({email,password})
+});
+
+console.log("Response received:", res);
+
+const data = await res.json();
+
+console.log("Server response:", data);
+
+if(data.success){
+
+localStorage.setItem("loggedInUser", email);
+
+window.location.href="index.html";
+
+}else{
+
+alert(data.message);
+
+}
+
+}catch(error){
+
+console.error("ERROR:", error);
+alert("Login failed. Try again.");
+
+}
+
+});
+
+});
+</script>
+
+</body>
+</html>

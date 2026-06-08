@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verification Success</title>
+    <link rel="icon" href="css/assets/logo1.png">
+    <style>
+        body{font-family:Arial;text-align:center;padding-top:100px;background:#f0fff0;}
+        h1{color:green;}
+        button{padding:10px 20px;font-size:16px;border-radius:8px;border:none;background-color:#193f34;color:white;cursor:pointer;}
+        button:hover{background-color:#193f34;}
+    </style>
+</head>
+<body>
+    <h1>Your Application is Verified!</h1>
+    <p>Congratulations! You can now start lending items on ShareSphere.</p>
+    <button onclick="window.location.href='list-item.html'">Start Lending Items</button>
+    <script>
+        function startLending(){
+            window.location.href = "/list-items"; // page to list items
+        }
+    </script>
+</body>
+</html>

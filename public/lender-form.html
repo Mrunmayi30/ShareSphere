@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Become a Lender - ShareSphere</title>
+<link rel="stylesheet" href="lender.css">
+<link rel="icon" href="css/assets/logo1.png">
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Become a Verified Lender</h2>
+
+    <form id="lenderForm" enctype="multipart/form-data">
+
+        <div class="form-row">
+            <label>First Name <span style="color:red">*</span></label>
+            <input type="text" id="firstName" readonly>
+        </div>
+
+        <div class="form-row">
+            <label>Last Name <span style="color:red">*</span></label>
+            <input type="text" id="lastName" readonly>
+        </div>
+
+        <div class="form-row">
+            <label>Date of Birth <span style="color:red">*</span></label>
+            <input type="date" id="dob" readonly>
+        </div>
+
+        <div class="form-row">
+            <label>Email <span style="color:red">*</span></label>
+            <input type="email" id="email" readonly>
+        </div>
+
+        <div class="form-row">
+            <label>Contact Number <span style="color:red">*</span></label>
+            <input type="text" id="phone" maxlength="10" required>
+        </div>
+
+        <div class="form-row">
+            <label>Current Address <span style="color:red">*</span></label>
+            <textarea id="address" required></textarea>
+        </div>
+
+        <div class="form-row">
+            <label>State <span style="color:red">*</span></label>
+            <select id="state" required>
+                <option value="">Select State</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label>District <span style="color:red">*</span></label>
+            <select id="district" required>
+                <option value="">Select District</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label>Pincode <span style="color:red">*</span></label>
+            <input type="text" id="pincode" required maxlength="6" pattern="[0-9]{6}" placeholder="Enter 6-digit pincode">
+        </div>
+
+        <div class="form-row">
+            <label>ID Proof Type <span style="color:red">*</span></label>
+            <select id="idType" required>
+                <option value="">Select ID</option>
+                <option>Aadhaar Card</option>
+                <option>Driving License</option>
+                <option>Voter ID</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <label>Upload ID Proof <span style="color:red">*</span></label>
+            <input type="file" id="idDocument" required>
+        </div>
+
+        <div class="form-row">
+            <label>Upload Self Photo <span style="color:red">*</span></label>
+            <input type="file" id="selfPhoto" required>
+        </div>
+
+        <div class="checkbox">
+            <input type="checkbox" required>
+            <span>I confirm that the information provided is correct.</span>
+        </div>
+
+        <button type="submit">Submit Verification</button>
+    </form>
+</div>
+
+<script>
+// Prevent bfcache from restoring stale page
+window.addEventListener("pageshow", function(e) {
+    if(e.persisted) {
+        window.location.reload();
+    }
+});
+document.addEventListener("DOMContentLoaded", function() {
+    const email = localStorage.getItem("loggedInUser");
+    if(!email) return window.location.href = "login.html";
+
+    // ✅ Check existing lender status BEFORE showing the form
+    fetch("/api/lenders/status/" + encodeURIComponent(email))
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === "Verified") {
+            return window.location.href = "lender-success.html";
+        } else if(data.status === "Rejected") {
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("reapply") === "true") {
+        return loadUserData(email);
+    }
+    return window.location.href = "lender-failed.html";
+}
+        // No application yet → fall through and show the form
+        loadUserData(email);
+    })
+    .catch(err => {
+        console.error(err);
+        loadUserData(email); // on error, just show the form
+    });
+
+    function loadUserData(email) {
+        document.getElementById("email").value = email;
+        fetch("/api/auth/user?email=" + encodeURIComponent(email))
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("firstName").value = data.first_name || "";
+            document.getElementById("lastName").value = data.last_name || "";
+            if(data.dob) document.getElementById("dob").value = data.dob.split("T")[0];
+        })
+        .catch(err => console.error(err));
+    }
+
+    const indiaData = {
+        "Maharashtra": ["Mumbai","Pune","Nagpur","Nashik","Aurangabad"],
+        "Karnataka": ["Bengaluru","Mysuru","Mangaluru","Hubli"],
+        "Tamil Nadu": ["Chennai","Coimbatore","Madurai","Salem"],
+        "Delhi": ["New Delhi","North Delhi","South Delhi"],
+        "West Bengal": ["Kolkata","Howrah","Darjeeling"]
+    };
+    const stateSelect = document.getElementById("state");
+    const districtSelect = document.getElementById("district");
+    for(const state in indiaData){
+        const option = document.createElement("option");
+        option.value = state; option.textContent = state;
+        stateSelect.appendChild(option);
+    }
+    stateSelect.addEventListener("change", function(){
+        districtSelect.innerHTML = '<option value="">Select District</option>';
+        (indiaData[this.value] || []).forEach(d => {
+            const option = document.createElement("option");
+            option.value = d; option.textContent = d;
+            districtSelect.appendChild(option);
+        });
+    });
+
+    document.getElementById("phone").addEventListener("input", function(){
+        this.value = this.value.replace(/[^0-9]/g,'');
+    });
+});
+
+// Form submit
+document.getElementById("lenderForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    if(!email){
+        alert("No email found! Cannot submit form.");
+        return;
+    }
+
+    const formData = new FormData();
+    ["firstName","lastName","dob","email","phone","address","state","district","pincode","idType"].forEach(id => {
+        formData.append(id, document.getElementById(id).value);
+    });
+    formData.append("idDocument", document.getElementById("idDocument").files[0]);
+    formData.append("selfPhoto", document.getElementById("selfPhoto").files[0]);
+
+    try {
+        const res = await fetch("/api/lenders/apply", { method:"POST", body: formData });
+        const data = await res.json();
+        if(data.success){
+            // ✅ Save email in sessionStorage for polling
+            sessionStorage.setItem("userEmail", email);
+
+            // ✅ Redirect to waiting page
+            // Replace sessionStorage redirect with this:
+            window.location.href = `waiting-verification.html?email=${encodeURIComponent(email)}`;
+        } else {
+            alert(data.message);
+        }
+    } catch(err){
+        console.error(err);
+        alert("Something went wrong while submitting the form.");
+    }
+});
+</script>
+</body>
+</html>

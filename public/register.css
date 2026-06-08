@@ -1,0 +1,188 @@
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+background:white;
+color:#193f34;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.container{
+width:360px;
+text-align:center;
+}
+
+.logo{
+width:60px;
+margin-bottom:20px;
+}
+
+h1{
+font-size:32px;
+font-weight:700;
+margin-bottom:30px;
+}
+
+label{
+display:block;
+text-align:left;
+font-size:13px;
+margin-bottom:6px;
+}
+
+input{
+width:100%;
+padding:12px;
+border-radius:4px;
+border:1px solid #555;
+background:white;
+color:black;
+margin-bottom:10px;
+}
+
+input::placeholder{
+color:#aaa;
+}
+
+.phone{
+color:gray;
+font-size:13px;
+display:block;
+text-align:left;
+margin-bottom:20px;
+text-decoration:none;
+}
+
+.next{
+width:100%;
+padding:13px;
+background:#193f34;
+border:none;
+color: white;
+border-radius:25px;
+font-weight:bold;
+margin-bottom:20px;
+cursor:pointer;
+}
+
+.or{
+margin:15px 0;
+color:#aaa;
+}
+
+.google, .gmail{
+width:100%;
+padding:12px;
+background:#193f34;
+border:1px solid #777;
+border-radius:25px;
+color:white;
+margin-bottom:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+cursor:pointer;
+}
+
+.google img, .gmail img{
+width:18px;
+}
+
+.login{
+margin-top:20px;
+font-size:14px;
+color:#aaa;
+}
+
+.login a{
+color:white;
+text-decoration:none;
+font-weight:bold;
+}
+
+
+.phone-box {
+    display: flex;
+    gap: 10px;
+    align-items: center;  /* vertically center both fields */
+}
+
+.isd {
+    width: 90px;
+    height: 44px;
+    padding: 0 12px;
+    font-size: 14px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='black' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E") no-repeat right 12px center;
+    background-size: 10px 6px;
+    color: black;
+    box-sizing: border-box;
+    line-height: 44px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-align: center;  /* optional: center country code text */
+}
+
+.phone-input {
+    flex: 1;
+    height: 44px;
+    padding: 0 12px;
+    font-size: 14px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    box-sizing: border-box;
+    line-height: 44px;
+}
+
+.otp-container {
+    display: none; 
+    text-align: center;
+    margin-top: 20px;
+}
+
+.otp-input {
+    padding: 12px;
+    width: 100%;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.otp-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background: #193f34;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+}
+
+.login{
+margin-top:20px;
+font-size:14px;
+color:#555;
+}
+
+.login a{
+color:#193f34;
+font-weight:600;
+text-decoration:none;
+}
+
+.login a:hover{
+text-decoration:underline;
+}
