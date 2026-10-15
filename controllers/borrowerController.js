@@ -14,20 +14,20 @@ const transporter = nodemailer.createTransport({
 const applyBorrower = async (req, res) => {
   try {
     const {
-      first_name, last_name, dob, email, phone,
-      address, state, district, pincode, id_type,
+      firstName, lastName, dob, email, phone,
+      address, state, district, pincode, idType,
     } = req.body;
 
-    if (!first_name || !last_name || !dob || !email || !phone ||
-        !address || !state || !district || !pincode || !id_type) {
-      return res.status(400).json({ error: 'All fields are required' });
+    if (!firstName || !lastName || !dob || !email || !phone ||
+        !address || !state || !district || !pincode || !idType) {
+      return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
     const idDocument = req.files?.idDocument?.[0]?.filename || null;
     const selfPhoto  = req.files?.selfPhoto?.[0]?.filename  || null;
 
     if (!idDocument || !selfPhoto) {
-      return res.status(400).json({ error: 'ID document and self photo are required' });
+      return res.status(400).json({ success: false, message: 'ID document and self photo are required' });
     }
 
     // Check if already applied
@@ -36,8 +36,8 @@ const applyBorrower = async (req, res) => {
     );
     if (existing.length) {
       return res.status(409).json({
-        error: 'Application already exists',
-        status: existing[0].status,
+        success: false,
+        message: `You already have an application (status: ${existing[0].status})`,
       });
     }
 
@@ -46,14 +46,14 @@ const applyBorrower = async (req, res) => {
         (first_name, last_name, dob, email, phone, address, state,
          district, pincode, id_type, id_document, self_photo, status)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
-      [first_name, last_name, dob, email, phone, address, state,
-       district, pincode, id_type, idDocument, selfPhoto]
+      [firstName, lastName, dob, email, phone, address, state,
+       district, pincode, idType, idDocument, selfPhoto]
     );
 
-    res.status(201).json({ message: 'Borrower application submitted successfully' });
+    res.status(201).json({ success: true, message: 'Borrower application submitted successfully' });
   } catch (err) {
     console.error('applyBorrower error:', err);
-    res.status(500).json({ error: 'Failed to submit application' });
+    res.status(500).json({ success: false, message: 'Failed to submit application' });
   }
 };
 
@@ -146,9 +146,81 @@ const verifyBorrower = async (req, res) => {
   }
 };
 
+// ─── GET /api/borrowers/requests ──────────────────────────────────────────────
+// Admin panel: get all borrower applications (same data as getAllBorrowers,
+// matches the URL shape admin.html expects — same pattern as lenders)
+const getAllRequests = async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      'SELECT * FROM borrowers ORDER BY created_at DESC'
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error('getAllRequests error:', err);
+    res.status(500).json({ error: 'Failed to fetch borrower requests' });
+  }
+};
+
+// ─── PUT /api/borrowers/requests/:id ───────────────────────────────────────────
+// Admin panel: approve or reject a borrower application
+// (id comes from the URL param, status from the PUT body — matches admin.html's updateStatus())
+const updateRequestStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;   // 'Verified' or 'Rejected'
+
+    if (!['Verified', 'Rejected'].includes(status)) {
+      return res.status(400).json({ success: false, message: 'Valid status (Verified/Rejected) required' });
+    }
+
+    const [rows] = await db.query('SELECT * FROM borrowers WHERE id = ?', [id]);
+    if (!rows.length) {
+      return res.status(404).json({ success: false, message: 'Borrower not found' });
+    }
+    const borrower = rows[0];
+
+    await db.query('UPDATE borrowers SET status = ? WHERE id = ?', [status, id]);
+
+    const isApproved = status === 'Verified';
+    try {
+      await transporter.sendMail({
+        from: `"ShareSphere" <${process.env.EMAIL_USER}>`,
+        to: borrower.email,
+        subject: isApproved
+          ? 'Your borrower application has been approved!'
+          : 'Update on your ShareSphere borrower application',
+        html: isApproved
+          ? `
+            <h2>You're verified as a borrower! 🎉</h2>
+            <p>Hi ${borrower.first_name},</p>
+            <p>Your borrower application on ShareSphere has been approved.
+               You can now rent items from lenders on the platform.</p>
+            <p>Head back to ShareSphere and start browsing!</p>
+          `
+          : `
+            <h2>Application update</h2>
+            <p>Hi ${borrower.first_name},</p>
+            <p>Unfortunately, your borrower application on ShareSphere could not be approved
+               at this time. This may be due to incomplete or unclear documents.</p>
+            <p>You're welcome to reapply with updated documents.</p>
+          `,
+      });
+    } catch (emailErr) {
+      console.error('Borrower status-update email failed:', emailErr.message);
+    }
+
+    res.json({ success: true, message: `Borrower ${status} successfully` });
+  } catch (err) {
+    console.error('updateRequestStatus error:', err);
+    res.status(500).json({ success: false, message: 'Failed to update borrower status' });
+  }
+};
+
 module.exports = {
   applyBorrower,
   getBorrowerStatus,
   getAllBorrowers,
   verifyBorrower,
+  getAllRequests,
+  updateRequestStatus,
 };

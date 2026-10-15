@@ -26,4 +26,8 @@ router.post('/verify',       borrowerController.verifyBorrower);
 
 // NOTE: /rent-request removed — Rent Now flow now goes through /api/bookings/create
 
+// Admin panel routes (match lender pattern)
+router.get('/requests',       borrowerController.getAllRequests);
+router.put('/requests/:id',   borrowerController.updateRequestStatus);
+
 module.exports = router;

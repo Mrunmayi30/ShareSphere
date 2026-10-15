@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/7.0.0/fuse.min.js"></script>
 
     <style>
         body {
@@ -365,6 +366,24 @@
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
+        /* ── Amazon-style rating row on each card ── */
+        .card-rating {
+            display: none;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+        .card-rating .stars {
+            color: #f0a500;
+            font-size: 11px;
+            letter-spacing: 0.03em;
+        }
+        .card-rating .count {
+            font-size: 10px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
         .card-location {
             font-size: 11px; color: #9ca3af;
             margin-bottom: 10px;
@@ -388,6 +407,10 @@
             background: #e8f5f0; color: #193f34;
         }
 
+        .item-card.unavailable { opacity: 0.55; }
+        .item-card.unavailable .card-image img { filter: grayscale(60%); }
+        .item-card.unavailable .card-badge { background: #fde8e8; color: #c0392b; }
+        
         /* ── States ── */
         .loading-wrap {
             grid-column: 1/-1;
@@ -571,6 +594,7 @@
         const BASE   = 'http://localhost:5000';
         let allItems = [];
         let sortMode = 'newest';
+        let fuse = null; // Fuse.js fuzzy-search index, built once items are loaded
 
         /* ── Selected filters: Set of city strings (lowercase) ── */
         let selectedCities = new Set();
@@ -647,14 +671,58 @@ if (searchQuery) {
     document.getElementById('breadcrumbCat').textContent = `Search: "${searchQuery}"`;
     document.title = `${searchQuery} – ShareSphere`;
 }
-                // PASTE THIS TEMPORARILY after: allItems = data.items || [];
-console.log("Sample item locations:", allItems.slice(0, 5).map(i => i.item_location));
+                buildSearchIndex();
                 buildSidebar();
                 applyFilters();
             } catch (err) {
                 document.getElementById('itemsGrid').innerHTML =
                     '<p style="grid-column:1/-1;text-align:center;color:#6b7280;padding:60px 0;">Failed to load. Please refresh.</p>';
             }
+        }
+
+        /* ════════════════════════════════════════════════════════════════
+           FUZZY SEARCH INDEX (Fuse.js)
+           Builds a typo-tolerant, multi-field search index over items so
+           the search bar behaves like a real e-commerce search: it matches
+           partial words, word order doesn't matter, and small spelling
+           mistakes still return relevant results, ranked by relevance.
+        ════════════════════════════════════════════════════════════════ */
+        function buildSearchIndex() {
+            if (typeof Fuse === 'undefined') { fuse = null; return; }
+            fuse = new Fuse(allItems, {
+                keys: [
+                    { name: 'title',         weight: 0.5 },
+                    { name: 'category',      weight: 0.25 },
+                    { name: 'description',   weight: 0.15 },
+                    { name: 'item_location', weight: 0.10 }
+                ],
+                threshold: 0.4,        // 0 = exact match only, 1 = match almost anything
+                distance: 100,         // how far a match can be from the expected position
+                ignoreLocation: true,  // match anywhere in the field, not just near the start
+                minMatchCharLength: 2,
+                useExtended: false
+            });
+        }
+
+        /* Fuzzy-search allItems for a free-text query, returns matches
+           ranked best-first. Falls back to a simple "contains any word"
+           search if Fuse.js failed to load for some reason. */
+        function fuzzySearchItems(query) {
+            const q = query.trim();
+            if (!q) return allItems;
+
+            if (fuse) {
+                return fuse.search(q).map(result => result.item);
+            }
+
+            // Fallback: match if ANY word in the query appears in any field
+            const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+            return allItems.filter(item => {
+                const haystack = [
+                    item.title, item.category, item.description, item.item_location
+                ].filter(Boolean).join(' ').toLowerCase();
+                return words.some(w => haystack.includes(w));
+            });
         }
 
         /* ════════════════════════════════════════════════════════════════
@@ -868,16 +936,13 @@ console.log("Sample item locations:", allItems.slice(0, 5).map(i => i.item_locat
            APPLY FILTERS + SORT
         ════════════════════════════════════════════════════════════════ */
      function applyFilters() {
-    const searchQuery = (urlParams.get('search') || '').toLowerCase().trim();
+    const searchQuery = (urlParams.get('search') || '').trim();
     let filtered = allItems;
 
-    // Filter by search query
+    // Fuzzy, typo-tolerant search across title/category/description/location.
+    // Results come back already ranked best-match-first by Fuse.js.
     if (searchQuery) {
-        filtered = filtered.filter(item =>
-            (item.title || '').toLowerCase().includes(searchQuery) ||
-            (item.category || '').toLowerCase().includes(searchQuery) ||
-            (item.description || '').toLowerCase().includes(searchQuery)
-        );
+        filtered = fuzzySearchItems(searchQuery);
     }
 
     // Filter by selected cities
@@ -895,12 +960,15 @@ console.log("Sample item locations:", allItems.slice(0, 5).map(i => i.item_locat
         selectedCities.size === 0 && !searchQuery ? (total === 1 ? '1 item available' : `${total} items available`) :
         `${showing} of ${total} items`;
 
-    renderItems(sorted(filtered));
+    renderItems(sorted(filtered, !!searchQuery));
 }
-        function sorted(items) {
+        function sorted(items, preserveRelevanceOrder) {
             const arr = [...items];
-            if (sortMode === 'price-low')  return arr.sort((a,b) => a.price_per_day - b.price_per_day);
-            if (sortMode === 'price-high') return arr.sort((a,b) => b.price_per_day - a.price_per_day);
+            if (sortMode === 'price-low')  return arr.sort((a,b) => (a.price_per_month ?? a.price_per_day ?? 0) - (b.price_per_month ?? b.price_per_day ?? 0));
+            if (sortMode === 'price-high') return arr.sort((a,b) => (b.price_per_month ?? b.price_per_day ?? 0) - (a.price_per_month ?? a.price_per_day ?? 0));
+            // "newest" (default): if we just ran a search, keep Fuse's
+            // relevance ranking instead of re-sorting; otherwise leave
+            // items in their original (newest-first, from the API) order.
             return arr;
         }
 
@@ -923,11 +991,59 @@ console.log("Sample item locations:", allItems.slice(0, 5).map(i => i.item_locat
             }
 
             items.forEach(item => grid.appendChild(buildCard(item)));
+
+            // Fetch ratings for every distinct lender shown in this exact
+            // set of cards, in a single batched request, then fill in the
+            // per-card stars once they arrive. Cards without a rating yet
+            // (or with zero reviews) simply keep the rating row hidden.
+            loadCardRatings(items);
+        }
+
+        /* ════════════════════════════════════════════════════════════════
+           AMAZON-STYLE CARD RATINGS
+           Uses GET /api/reviews/users/batch?emails=... so a whole grid of
+           cards loads its ratings in one request instead of one per card.
+        ════════════════════════════════════════════════════════════════ */
+        async function loadCardRatings(items) {
+            const emails = [...new Set(
+                items
+                    .map(i => i.owner_email || i.lender_email || i.owner || i.email)
+                    .filter(Boolean)
+            )];
+            if (!emails.length) {
+                console.warn(
+                    'loadCardRatings: no owner email found on any item — check what field ' +
+                    'name GET /api/items actually returns for the lender (e.g. open the ' +
+                    'Network tab, inspect the response, and look for something like ' +
+                    'owner_email / lender_email). Sample item:', items[0]
+                );
+                return;
+            }
+
+            try {
+                const res = await fetch(`${BASE}/api/reviews/users/batch?emails=${encodeURIComponent(emails.join(','))}`);
+                const data = await res.json();
+                if (!data.success) return;
+
+                document.querySelectorAll('.card-rating[data-owner]').forEach(el => {
+                    const owner = el.dataset.owner;
+                    const info = data.ratings[owner];
+                    if (info && info.review_count > 0) {
+                        const rounded = Math.round(Number(info.avg_rating));
+                        const stars = '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
+                        el.innerHTML = `<span class="stars">${stars}</span><span class="count">${info.avg_rating} (${info.review_count})</span>`;
+                        el.style.display = 'flex';
+                    }
+                });
+            } catch (err) {
+                console.error('loadCardRatings failed:', err);
+            }
         }
 
         function buildCard(item) {
             const card   = document.createElement('div');
-            card.className = 'item-card';
+            const isBooked = !!Number(item.is_booked);
+            card.className = 'item-card' + (isBooked ? ' unavailable' : '');
 
             const images = Array.isArray(item.image_paths) ? item.image_paths : [];
             const imgHTML = images.length
@@ -936,18 +1052,20 @@ console.log("Sample item locations:", allItems.slice(0, 5).map(i => i.item_locat
                 : `<div class="no-image"><i class="fa-solid fa-image"></i></div>`;
 
             const location = item.item_location || item.location || item.city || '';
+            const ownerEmail = item.owner_email || item.lender_email || item.owner || item.email || '';
 
             card.innerHTML = `
                 <div class="card-image">${imgHTML}</div>
                 <div class="card-body">
                     <div class="card-title">${esc(item.title)}</div>
+                    <div class="card-rating" data-owner="${esc(ownerEmail)}"></div>
                     ${location ? `<div class="card-location"><i class="fa-solid fa-location-dot"></i>${esc(location)}</div>` : ''}
                     <div class="card-bottom">
                         <div class="card-price">
-                            ₹${Number(item.price_per_day).toLocaleString('en-IN')}
-                            <span>/ day</span>
+                            ₹${Number(item.price_per_month ?? item.price_per_day ?? 0).toLocaleString('en-IN')}
+                            <span>/ month</span>
                         </div>
-                        <span class="card-badge">${esc(item.condition || '')}</span>
+                        <span class="card-badge">${isBooked ? 'Currently Rented' : esc(item.condition || '')}</span>
                     </div>
                 </div>`;
 

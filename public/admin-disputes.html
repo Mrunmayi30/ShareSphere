@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Disputes – Admin</title>
+  <link rel="icon" href="css/assets/logo1.png">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Montserrat', sans-serif; background: #f5f9f7; margin: 0; padding: 2rem; }
+    .top-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; max-width:800px; }
+    .back-link {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      padding:0.6rem 1.2rem; border:1px solid #193f34; background:#fff; color:#193f34;
+      border-radius:8px; font-weight:600; text-decoration:none; font-family:inherit; font-size:0.85rem;
+    }
+    .back-link:hover { background:#eef5f1; }
+    .back-link svg { width:16px; height:16px; }
+    .dispute-card { background: #fff; border: 1.5px solid #e0ede8; border-radius: 14px; padding: 1.3rem; margin-bottom: 1.2rem; max-width: 800px; }
+    h2 { color: #193f34; margin: 0 0 0.6rem; }
+    .row { margin: 0.4rem 0; font-size: 0.9rem; }
+    .row strong { color: #193f34; }
+    .photos { display: flex; gap: 0.8rem; margin: 1rem 0; flex-wrap: wrap; }
+    .photos figure { margin: 0; text-align: center; }
+    .photos figcaption { font-size: 0.72rem; color: #666; margin-top: 0.3rem; }
+    .photos img { width: 140px; height: 140px; object-fit: cover; border-radius: 8px; border: 1.5px solid #e0ede8; cursor: pointer; }
+    .resolve-box { margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e0ede8; }
+    label { font-size: 0.8rem; font-weight: 600; color: #193f34; display: block; margin-top: 0.6rem; }
+    input, textarea { width: 100%; padding: 0.6rem; margin-top: 0.3rem; border: 1.5px solid #d0e4da; border-radius: 8px; box-sizing: border-box; font-family: inherit; }
+    button { background: #193f34; color: #fff; border: none; padding: 0.7rem 1.4rem; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 0.8rem; }
+    .resolved-tag { color: #1e7a34; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <h1 style="color:#193f34;">Disputes</h1>
+    <a class="back-link" href="admin.html" title="Back to verification requests">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>
+      </svg>
+      Verification Requests
+    </a>
+  </div>
+  <div id="list"></div>
+
+  <script>
+    const BASE = 'http://localhost:5000';
+
+    async function loadDisputes() {
+      const res = await fetch(`${BASE}/api/disputes`);
+      const data = await res.json();
+      const list = document.getElementById('list');
+      list.innerHTML = '';
+
+      if (!data.disputes.length) {
+        list.innerHTML = '<p>No disputes.</p>';
+        return;
+      }
+
+      data.disputes.forEach(d => {
+        const card = document.createElement('div');
+        card.className = 'dispute-card';
+        card.innerHTML = `
+          <h2>${d.title} — Booking #${d.booking_id}</h2>
+          <div class="row"><strong>Raised by:</strong> ${d.raised_by} (${d.raised_by_role})</div>
+          <div class="row"><strong>Reason:</strong> ${d.reason}</div>
+          <div class="row"><strong>Deposit amount:</strong> ₹${d.deposit_amount}</div>
+          <div class="row"><strong>Status:</strong> ${d.status === 'resolved' ? `<span class="resolved-tag">Resolved — ₹${d.deduction_amount} deducted</span>` : 'Open'}</div>
+          <div class="photos">
+            ${d.pickup_photo ? `<figure><img src="${BASE}/uploads/${encodeURIComponent(d.pickup_photo)}" onclick="window.open(this.src)"><figcaption>Pickup condition</figcaption></figure>` : ''}
+            ${d.return_photo ? `<figure><img src="${BASE}/uploads/${encodeURIComponent(d.return_photo)}" onclick="window.open(this.src)"><figcaption>Return condition</figcaption></figure>` : ''}
+            ${d.evidence_photo ? `<figure><img src="${BASE}/uploads/${encodeURIComponent(d.evidence_photo)}" onclick="window.open(this.src)"><figcaption>Dispute evidence</figcaption></figure>` : ''}
+          </div>
+          ${d.status === 'open' ? `
+            <div class="resolve-box">
+              <label>Deduction amount (₹)</label>
+              <input type="number" id="deduction-${d.id}" placeholder="0">
+              <label>Resolution note</label>
+              <textarea id="note-${d.id}" rows="2" placeholder="Explain your decision"></textarea>
+              <button onclick="resolve(${d.id})">Resolve & Refund Remaining Deposit</button>
+            </div>
+          ` : ''}
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    async function resolve(disputeId) {
+      const deduction = document.getElementById(`deduction-${disputeId}`).value || 0;
+      const note = document.getElementById(`note-${disputeId}`).value;
+
+      if (!confirm(`Deduct ₹${deduction} from the deposit and refund the rest?`)) return;
+
+      const res = await fetch(`${BASE}/api/disputes/${disputeId}/resolve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deduction_amount: deduction, resolution_note: note })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(`Resolved. ₹${data.refund_amount} refunded to borrower.`);
+        loadDisputes();
+      } else {
+        alert('⚠️ ' + data.message);
+      }
+    }
+
+    loadDisputes();
+  </script>
+</body>
+</html>

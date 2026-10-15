@@ -45,7 +45,6 @@
     width: 100%;
   }
 
-  /* Pulse icon */
   .icon-wrapper {
     width: 90px; height: 90px;
     margin: 0 auto 2rem;
@@ -262,11 +261,8 @@ function checkStatus() {
       if (data.status === "Verified") {
         el.className = "approved";
         el.textContent = "✓ You are now verified! Redirecting...";
-        const itemId = sessionStorage.getItem("rentItemId");
         setTimeout(() => {
-          window.location.href = itemId
-            ? "item-details.html?id=" + itemId
-            : "index.html";
+          window.location.href = "borrower-success.html";
         }, 2000);
       } else if (data.status === "Rejected") {
         el.className = "rejected";

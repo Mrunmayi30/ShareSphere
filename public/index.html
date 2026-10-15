@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
 </head>
 <body>
     <div class="main">
@@ -25,22 +26,26 @@
             </div>
             <div class="auth-buttons">
 
-            <button class="signup">Sign Up</button>
-            <button class="login">Log In</button>
+<button class="signup">Sign Up</button>
+<button class="login">Log In</button>
 
-            <div class="user-menu" style="display:none;">
-            <i class="fa-solid fa-user"></i>
-    
+<div class="user-menu" style="display:none;">
+<i class="fa-solid fa-user"></i>
 
-            <div class="dropdown">
-            <a href="#">Profile</a>
-            <a href="#" class="logout">Log Out</a>
-            </div>
-            </div>
 
-            <button class="lender">Become a Lender</button>
+<div class="dropdown">
+<a href="profile.html">Profile</a>
+<a href="#" class="logout">Log Out</a>
+</div>
+</div>
 
-            </div>
+<button class="my-bookings" style="display:none;">
+    <i class="fa-solid fa-calendar-check"></i> My Bookings
+</button>
+
+<button class="lender">Become a Lender</button>
+
+</div>
         </div>
         <div class ="midbar">
         <div class="all-cat-wrap">
@@ -80,10 +85,10 @@
             <div class="slider">
             <button class="prev">&#10094;</button>
                 <div class="slides">
-                <img src="css/assets/card1img.jpg">
+                <img src="css/assets/card1img.png">
                 <img src="css/assets/card2img.webp">
                 <img src="css/assets/card3img.webp">
-                <img src="css/assets/card4img.jfif">
+                <img src="css/assets/card4img.png">
                 <img src="css/assets/card5img.webp">
                 </div>
             <button class="next">&#10095;</button>
@@ -133,7 +138,7 @@
     font-family: 'Montserrat', sans-serif;
   }
   .section-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: clamp(1.6rem, 4vw, 2.4rem);
     font-weight: 700;
     color: var(--forest);
@@ -146,10 +151,11 @@
     line-height: 1.75; font-family: 'Montserrat', sans-serif;
   }
 
+  /* Steps: 2 x 2 on tablets, 1 column on phones, 4 across on desktop */
   .steps-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
   }
   .step-card {
     background: #fff;
@@ -177,6 +183,7 @@
     font-size: 1.6rem;
     margin-bottom: 1rem;
     display: block;
+    color: var(--forest-light);
   }
   .step-card h3 {
     font-family: 'Montserrat', sans-serif;
@@ -189,12 +196,12 @@
     line-height: 1.65; font-family: 'Montserrat', sans-serif;
   }
 
-  /* connector dots between steps on desktop */
+  /* connector dots between steps (desktop only) */
   .step-connector {
     display: none;
   }
-  @media (min-width: 640px) {
-    .steps-grid { grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; align-items: start; }
+  @media (min-width: 1025px) {
+    .steps-grid { grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; align-items: start; gap: 2rem; }
     .step-connector {
       display: flex; align-items: center; padding-top: 3.4rem;
     }
@@ -226,9 +233,6 @@
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
     align-items: center;
-  }
-  @media (max-width: 720px) {
-    .why-inner { grid-template-columns: 1fr; gap: 2.5rem; }
   }
   .why-text .section-eyebrow { color: var(--mint); border-color: rgba(200,235,224,0.3); }
   .why-text .section-title { color: #fff; text-align: left; }
@@ -281,7 +285,7 @@
   }
   .stat-item { text-align: center; }
   .stat-num {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 2.4rem; font-weight: 700;
     color: var(--forest); line-height: 1;
   }
@@ -313,7 +317,7 @@
     background: var(--forest); color: #fff;
     font-family: 'Montserrat', sans-serif;
     font-size: 0.88rem; font-weight: 700;
-    padding: 0.8rem 2rem; border-radius: 10px;
+    padding: 0.8rem 2rem; border-radius: 22px;
     text-decoration: none; border: none; cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
     letter-spacing: 0.02em;
@@ -324,7 +328,7 @@
     background: transparent; color: var(--forest);
     font-family: 'Montserrat', sans-serif;
     font-size: 0.88rem; font-weight: 700;
-    padding: 0.8rem 2rem; border-radius: 10px;
+    padding: 0.8rem 2rem; border-radius: 22px;
     text-decoration: none; border: 2px solid var(--forest); cursor: pointer;
     transition: background 0.2s, color 0.2s;
     letter-spacing: 0.02em;
@@ -367,10 +371,46 @@
     transition: opacity 0.55s ease, transform 0.55s ease;
   }
   .reveal.visible { opacity: 1; transform: translateY(0); }
-</style>
 
-<!-- Playfair Display for headings (matches T&C page) -->
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  /* ════════════════════════════════
+     RESPONSIVE  (sections above)
+     1024px = tablet  |  768px = small tablet  |  480px = phone
+  ════════════════════════════════ */
+
+  /* Tablet: mission section stacks, text centred above the four pillars */
+  @media (max-width: 1024px) {
+    .why-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+    .why-text { text-align: center; }
+    .why-text .section-title { text-align: center; }
+  }
+
+  @media (max-width: 768px) {
+    .how-it-works { padding: 3.5rem 1.2rem 3rem; }
+    .section-sub  { margin-bottom: 2.2rem; }
+    .why-section  { padding: 3.5rem 1.2rem; }
+    .stats-strip  { padding: 2.5rem 1.2rem; }
+    .cta-banner   { padding: 3.5rem 1.2rem; }
+  }
+
+  @media (max-width: 640px) {
+    .footer-inner { flex-direction: column; text-align: center; }
+    .footer-links { justify-content: center; }
+  }
+
+  @media (max-width: 480px) {
+    .steps-grid  { grid-template-columns: 1fr; }
+    .step-card   { padding: 1.6rem 1.2rem 1.5rem; }
+    .why-pillars { grid-template-columns: 1fr; }
+
+    /* Stats: tidy 2 x 2 grid */
+    .stats-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 1rem; }
+    .stat-num    { font-size: 1.9rem; }
+
+    /* Buttons fill the width and are easy to tap */
+    .cta-buttons   { flex-direction: column; align-items: stretch; }
+    .cta-buttons a { justify-content: center; }
+  }
+</style>
 
 <!-- ─────────────────────────────────────────────── -->
 <!--  START OF SECTIONS                              -->
@@ -386,7 +426,7 @@
     <div class="steps-grid">
       <div class="step-card">
         <div class="step-number">1</div>
-        <span class="step-icon"></span>
+        <span class="step-icon"><i class="fa-solid fa-binoculars"></i></span>
         <h3>Browse Listings</h3>
         <p>Search by category or keyword to find exactly what you need from verified lenders around you.</p>
       </div>
@@ -395,7 +435,7 @@
 
       <div class="step-card">
         <div class="step-number">2</div>
-        <span class="step-icon"></span>
+        <span class="step-icon"><i class="fa-solid fa-comments"></i></span>
         <h3>Contact the Lender</h3>
         <p>Get the lender's phone or email directly. No waiting rooms — reach out and discuss details your way.</p>
       </div>
@@ -404,7 +444,7 @@
 
       <div class="step-card">
         <div class="step-number">3</div>
-        <span class="step-icon"></span>
+        <span class="step-icon"><i class="fa-solid fa-handshake"></i></span>
         <h3>Agree & Pick Up</h3>
         <p>Finalise terms, price, and duration with the lender directly. Collect the item at the agreed time.</p>
       </div>
@@ -413,7 +453,7 @@
 
       <div class="step-card">
         <div class="step-number">4</div>
-        <span class="step-icon"></span>
+        <span class="step-icon"><i class="fa-solid fa-star"></i></span>
         <h3>Return & Review</h3>
         <p>Return the item as agreed and leave a review to help the community trust each other more.</p>
       </div>
@@ -532,6 +572,14 @@ buttons.forEach(btn => btn.classList.remove("active"));
 
 button.classList.add("active");
 
+// Navigate sub-category buttons to their matching category page.
+// The "All Categories" button (main-category) is left alone since
+// it only needs to toggle the dropdown, not navigate.
+if (button.classList.contains("sub-category")) {
+    const categoryName = button.textContent.trim();
+    window.location.href = `category.html?cat=${encodeURIComponent(categoryName)}`;
+}
+
 });
 });
 </script>
@@ -578,6 +626,7 @@ document.querySelector(".login").addEventListener("click", function(){
 const signupBtn = document.querySelector(".signup");
 const loginBtn = document.querySelector(".login");
 const userMenu = document.querySelector(".user-menu");
+const myBookingsBtn = document.querySelector(".my-bookings");
 const username = document.querySelector(".username");
 
 if(user){
@@ -585,6 +634,7 @@ signupBtn.style.display = "none";
 loginBtn.style.display = "none";
 
 userMenu.style.display = "flex";
+myBookingsBtn.style.display = "inline-flex";
 }
 </script>
 <script>
@@ -596,6 +646,11 @@ this.classList.toggle("active");
     document.querySelector(".logout").addEventListener("click",function(){
 localStorage.removeItem("loggedInUser");
 window.location.reload();
+});
+</script>
+<script>
+document.querySelector(".my-bookings").addEventListener("click", function(){
+    window.location.href = "mybookings.html";
 });
 </script>
 <script>

@@ -2,34 +2,196 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin Panel - ShareSphere</title>
 <link rel="icon" href="css/assets/logo1.png">
 <link rel="stylesheet" href="admin.css">
+<style>
+  /* ── Password Gate ── */
+  #gate {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    z-index: 9999;
+    background: #193f34;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .gate-box {
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 16px;
+    padding: 2.5rem 2rem;
+    width: 340px;
+    max-width: 90vw;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+  }
+  .gate-logo { font-size: 1.4rem; font-weight: 700; color: #193f34; margin-bottom: 0.2rem; }
+  .gate-sub  { font-size: 0.78rem; color: #6b7280; margin-bottom: 1.8rem; }
+  .gate-box input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #e2e8e4;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    margin: 0 0 0.75rem 0;
+    text-align: center;
+    letter-spacing: 0.08em;
+  }
+  .gate-box input:focus { border-color: #193f34; }
+  .gate-box button {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0.8rem;
+    background: #193f34;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .gate-box button:hover { background: #0d271f; }
+  .gate-error { color: #dc2626; font-size: 0.8rem; margin-top: 0.6rem; display: none; }
+
+  /* ── Admin layout ── */
+  .top-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; }
+  .top-bar-right { display:flex; align-items:center; gap:0.75rem; }
+  .logout-btn {
+    padding:0.5rem 1rem; background:#e24b4a; color:#fff;
+    border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:0.85rem;
+  }
+  .logout-btn:hover { background:#c0392b; }
+  .tab-bar { display:flex; gap:0.5rem; margin:1rem 0; }
+  .tab-btn { padding:0.6rem 1.2rem; border:1px solid #193f34; background:#fff; color:#193f34; cursor:pointer; border-radius:6px; font-weight:600; }
+  .tab-btn.active { background:#193f34; color:#fff; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+  .badge-count { background:#e24b4a; color:#fff; border-radius:999px; font-size:0.7rem; padding:0.1rem 0.5rem; margin-left:0.4rem; }
+  .disputes-link {
+    display:inline-flex; align-items:center;
+    padding:0.6rem 1.2rem; border:1px solid #193f34; background:#193f34; color:#fff;
+    border-radius:6px; font-weight:600; text-decoration:none; font-family:inherit;
+  }
+  .disputes-link:hover { background:#12291f; }
+</style>
 </head>
 <body>
 
-<h2>Admin Panel - ShareSphere</h2>
+<!-- Password Gate -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">ShareSphere</div>
+    <div class="gate-sub">Admin access only — restricted area</div>
+    <input type="password" id="gate-input" placeholder="Enter admin password"
+           onkeydown="if(event.key==='Enter') checkPassword()">
+    <button onclick="checkPassword()">Enter Admin Panel</button>
+    <div class="gate-error" id="gate-error">Incorrect password. Try again.</div>
+  </div>
+</div>
 
-<table id="requestsTable" border="1" cellpadding="10">
-  <thead>
-    <tr>
-      <th>Email</th><th>Full Name</th><th>DOB</th><th>Phone</th>
-      <th>Address</th><th>State</th><th>District</th><th>Pincode</th>
-      <th>ID Type</th><th>ID Document</th><th>Self Photo</th>
-      <th>Status</th><th>Actions</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+<!-- Admin Content -->
+<div id="admin-content" style="display:none; padding:20px;">
+
+  <div class="top-bar">
+    <h2>Admin Panel - ShareSphere</h2>
+    <div class="top-bar-right">
+      <a class="disputes-link" href="admin-disputes.html">Disputes</a>
+      <button class="logout-btn" onclick="logout()">Log Out</button>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" id="lendersTabBtn" onclick="switchTab('lenders')">
+      Lender Applications <span class="badge-count" id="lendersPendingCount">0</span>
+    </button>
+    <button class="tab-btn" id="borrowersTabBtn" onclick="switchTab('borrowers')">
+      Borrower Applications <span class="badge-count" id="borrowersPendingCount">0</span>
+    </button>
+  </div>
+
+  <div class="tab-panel active" id="lendersPanel">
+    <table id="lendersTable" border="1" cellpadding="10">
+      <thead><tr>
+        <th>Email</th><th>Full Name</th><th>DOB</th><th>Phone</th>
+        <th>Address</th><th>State</th><th>District</th><th>Pincode</th>
+        <th>ID Type</th><th>ID Document</th><th>Self Photo</th>
+        <th>Status</th><th>Actions</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="tab-panel" id="borrowersPanel">
+    <table id="borrowersTable" border="1" cellpadding="10">
+      <thead><tr>
+        <th>Email</th><th>Full Name</th><th>DOB</th><th>Phone</th>
+        <th>Address</th><th>State</th><th>District</th><th>Pincode</th>
+        <th>ID Type</th><th>ID Document</th><th>Self Photo</th>
+        <th>Status</th><th>Actions</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+</div>
 
 <script>
-async function loadRequests() {
-  const res = await fetch("/api/lenders/requests");
-  const data = await res.json();
-  const tbody = document.querySelector("#requestsTable tbody");
-  tbody.innerHTML = "";
-  data.forEach(req => {
-    const row = document.createElement("tr");
+  const ADMIN_PASSWORD = '12345';
+
+  if (sessionStorage.getItem('adminAuth') === 'true') {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('admin-content').style.display = 'block';
+    loadRequests('lenders');
+    loadRequests('borrowers');
+  }
+
+  function checkPassword() {
+    const entered = document.getElementById('gate-input').value;
+    if (entered === ADMIN_PASSWORD) {
+      sessionStorage.setItem('adminAuth', 'true');
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('admin-content').style.display = 'block';
+      loadRequests('lenders');
+      loadRequests('borrowers');
+    } else {
+      const err = document.getElementById('gate-error');
+      err.style.display = 'block';
+      document.getElementById('gate-input').value = '';
+      document.getElementById('gate-input').focus();
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem('adminAuth');
+    location.reload();
+  }
+
+  function switchTab(name) {
+    document.getElementById('lendersPanel').classList.toggle('active', name === 'lenders');
+    document.getElementById('borrowersPanel').classList.toggle('active', name === 'borrowers');
+    document.getElementById('lendersTabBtn').classList.toggle('active', name === 'lenders');
+    document.getElementById('borrowersTabBtn').classList.toggle('active', name === 'borrowers');
+  }
+
+  function renderRow(req, kind) {
+    const idDoc = req.id_document
+      ? `<a href="/uploads/${req.id_document}" target="_blank">
+           <img src="/uploads/${req.id_document}" style="width:80px;height:60px;object-fit:cover;border-radius:6px;display:block;margin-bottom:4px;" onerror="this.style.display='none'">View</a>`
+      : '—';
+    const selfPhoto = req.self_photo
+      ? `<a href="/uploads/${req.self_photo}" target="_blank">
+           <img src="/uploads/${req.self_photo}" style="width:60px;height:60px;object-fit:cover;border-radius:50%;display:block;margin-bottom:4px;" onerror="this.style.display='none'">View</a>`
+      : '—';
+    const row = document.createElement('tr');
     row.innerHTML = `
       <td>${req.email}</td>
       <td>${req.first_name} ${req.last_name}</td>
@@ -40,33 +202,37 @@ async function loadRequests() {
       <td>${req.district}</td>
       <td>${req.pincode}</td>
       <td>${req.id_type}</td>
-      <td>${req.id_document ? `<a href="/${req.id_document}" target="_blank">View</a>` : ''}</td>
-      <td>${req.self_photo ? `<a href="/${req.self_photo}" target="_blank">View</a>` : ''}</td>
+      <td>${idDoc}</td>
+      <td>${selfPhoto}</td>
       <td>${req.status}</td>
-      <td>
-        ${req.status === "Pending" ? `
-          <button class="verify" onclick="updateLenderStatus(${req.id}, 'Verified', '${req.email}')">Verify</button>
-          <button class="reject" onclick="updateLenderStatus(${req.id}, 'Rejected', '${req.email}')">Reject</button>
-        ` : ""}
+      <td>${req.status && req.status.toLowerCase() === 'pending' ? `
+        <button class="verify" onclick="updateStatus('${kind}',${req.id},'Verified','${req.email}')">Verify</button>
+        <button class="reject" onclick="updateStatus('${kind}',${req.id},'Rejected','${req.email}')">Reject</button>` : '—'}
       </td>`;
-    tbody.appendChild(row);
-  });
-}
+    return row;
+  }
 
-async function updateLenderStatus(id, status, email) {
-  try {
-    const res = await fetch(`/api/lenders/requests/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status })
-    });
+  async function loadRequests(kind) {
+    const res  = await fetch(`/api/${kind}/requests`);
     const data = await res.json();
-    if (data.success) { alert(`Lender ${email} has been ${status}`); loadRequests(); }
-    else { alert("Failed to update status"); }
-  } catch (err) { console.error(err); alert("Error updating status"); }
-}
+    const tbody = document.querySelector(`#${kind}Table tbody`);
+    tbody.innerHTML = '';
+    data.forEach(req => tbody.appendChild(renderRow(req, kind)));
+    const pending = data.filter(r => r.status && r.status.toLowerCase() === 'pending').length;
+    document.getElementById(`${kind}PendingCount`).textContent = pending;
+  }
 
-loadRequests();
+  async function updateStatus(kind, id, status, email) {
+    try {
+      const res  = await fetch(`/api/${kind}/requests/${id}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      const data = await res.json();
+      if (data.success) { alert(`${kind === 'lenders' ? 'Lender' : 'Borrower'} ${email} has been ${status}`); loadRequests(kind); }
+      else { alert('Failed to update status'); }
+    } catch (err) { console.error(err); alert('Error updating status'); }
+  }
 </script>
 </body>
 </html>

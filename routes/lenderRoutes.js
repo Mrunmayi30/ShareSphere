@@ -27,5 +27,13 @@ router.put("/requests/:id", lenderController.updateRequestStatus);
 // **Check lender status for logged-in user**
 router.get("/status/:email", lenderController.checkLenderStatus);
 
+// **Check lender status for logged-in user**
+router.get("/status/:email", lenderController.checkLenderStatus);
+
+// **Save / fetch lender's payout (bank) details**
+router.post("/bank-details", lenderController.saveBankDetails);
+router.get("/bank-details/:email", lenderController.getBankDetails);
+
+module.exports = router;
 
 module.exports = router;

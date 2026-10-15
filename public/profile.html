@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="css/assets/logo1.png">
+  <title>My Profile – ShareSphere</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --forest: #193f34; --forest-deep: #0d271f;
+      --white: #ffffff; --off-white: #f5f9f7;
+      --muted: rgba(25,63,52,0.5); --border: rgba(25,63,52,0.12);
+      --mint-soft: #e8f5f0;
+    }
+    body { background: var(--off-white); color: var(--forest); font-family: 'Montserrat', sans-serif; min-height: 100vh; }
+    nav { position: sticky; top: 0; z-index: 100; background: var(--forest); padding: 0 2rem; height: 62px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 16px rgba(25,63,52,0.2); }
+    .nav-brand { font-weight: 600; font-size: 1.25rem; color: var(--white); text-decoration: none; letter-spacing: 0.04em; }
+    .nav-back { color: rgba(255,255,255,0.7); font-size: 0.88rem; font-weight: 500; text-decoration: none; }
+    .nav-back:hover { color: var(--white); }
+
+    .wrap { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .email-line { font-size: 0.85rem; color: var(--muted); margin-bottom: 2rem; }
+
+    .section-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 12px rgba(25,63,52,0.06); }
+    .section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
+    .section-title h2 { font-size: 1.05rem; font-weight: 700; }
+
+    .status-badge { display: inline-flex; align-items: center; gap: 0.3rem; border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
+    .status-pending, .status-Pending { background: #fff4e0; color: #a06600; }
+    .status-verified, .status-Verified { background: #e6f7e9; color: #1e7a34; }
+    .status-rejected, .status-Rejected { background: #fde8e8; color: #c0392b; }
+
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.5rem; }
+    @media (max-width: 560px) { .field-grid { grid-template-columns: 1fr; } }
+    .field label { display: block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.25rem; }
+    .field .value { font-size: 0.92rem; color: var(--forest); }
+
+    .doc-row { display: flex; gap: 1rem; margin-top: 1.2rem; flex-wrap: wrap; }
+    .doc-thumb { display: block; }
+    .doc-thumb img { width: 110px; height: 110px; object-fit: cover; border-radius: 10px; border: 1.5px solid var(--border); cursor: pointer; }
+    .doc-label { font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem; text-align: center; }
+
+    .empty-role { text-align: center; padding: 1.5rem 1rem; }
+    .empty-role p { font-size: 0.87rem; color: var(--muted); margin-bottom: 1rem; }
+    .btn { border: none; border-radius: 9px; padding: 0.6rem 1.2rem; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer; text-decoration: none; display: inline-block; }
+    .btn-primary { background: var(--forest); color: var(--white); }
+    .btn-primary:hover { background: var(--forest-deep); }
+
+    #loading, #error { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/index.html" class="nav-brand">ShareSphere</a>
+    <a href="/index.html" class="nav-back">← Back to listings</a>
+  </nav>
+
+  <div class="wrap">
+    <h1>My Profile</h1>
+    <div class="email-line" id="email-line"></div>
+
+    <div id="loading">Loading your profile...</div>
+    <div id="error" style="display:none;"></div>
+    <div id="content" style="display:none;">
+
+      <!-- Borrower section -->
+      <div class="section-card">
+        <div class="section-title">
+          <h2>👤 Borrower Profile</h2>
+          <span id="borrower-status" class="status-badge" style="display:none;"></span>
+        </div>
+        <div id="borrower-body"></div>
+      </div>
+
+      <!-- Lender section -->
+      <div class="section-card">
+        <div class="section-title">
+          <h2>🏠 Lender Profile</h2>
+          <span id="lender-status" class="status-badge" style="display:none;"></span>
+        </div>
+        <div id="lender-body"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const BASE = 'http://localhost:5000';
+    const email = localStorage.getItem('loggedInUser');
+
+    function field(label, value) {
+      return `<div class="field"><label>${label}</label><div class="value">${value || '—'}</div></div>`;
+    }
+
+    function formatDate(d) {
+      return d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+    }
+
+    function renderBorrower(borrower) {
+      const statusEl = document.getElementById('borrower-status');
+      const bodyEl = document.getElementById('borrower-body');
+
+      if (!borrower) {
+        statusEl.style.display = 'none';
+        bodyEl.innerHTML = `
+          <div class="empty-role">
+            <p>You haven't applied as a borrower yet. Verify your identity to start renting items.</p>
+            <a href="borrower-form.html" class="btn btn-primary">Apply as Borrower</a>
+          </div>
+        `;
+        return;
+      }
+
+      statusEl.style.display = '';
+      statusEl.textContent = borrower.status;
+      statusEl.className = `status-badge status-${borrower.status}`;
+
+      bodyEl.innerHTML = `
+        <div class="field-grid">
+          ${field('Full Name', `${borrower.first_name || ''} ${borrower.last_name || ''}`.trim())}
+          ${field('Date of Birth', formatDate(borrower.dob))}
+          ${field('Phone', borrower.phone)}
+          ${field('ID Type', borrower.id_type)}
+          ${field('Address', borrower.address)}
+          ${field('District', borrower.district)}
+          ${field('State', borrower.state)}
+          ${field('Pincode', borrower.pincode)}
+          ${field('Applied On', formatDate(borrower.created_at))}
+        </div>
+        <div class="doc-row">
+          ${borrower.id_document ? `
+            <div class="doc-thumb">
+              <img src="${BASE}/uploads/${encodeURIComponent(borrower.id_document)}" onclick="window.open(this.src)">
+              <div class="doc-label">ID Document</div>
+            </div>` : ''}
+          ${borrower.self_photo ? `
+            <div class="doc-thumb">
+              <img src="${BASE}/uploads/${encodeURIComponent(borrower.self_photo)}" onclick="window.open(this.src)">
+              <div class="doc-label">Selfie</div>
+            </div>` : ''}
+        </div>
+      `;
+    }
+
+    function renderLender(lender) {
+      const statusEl = document.getElementById('lender-status');
+      const bodyEl = document.getElementById('lender-body');
+
+      if (!lender) {
+        statusEl.style.display = 'none';
+        bodyEl.innerHTML = `
+          <div class="empty-role">
+            <p>You haven't applied as a lender yet. Verify your identity to start listing items.</p>
+            <a href="lender-form.html" class="btn btn-primary">Become a Lender</a>
+          </div>
+        `;
+        return;
+      }
+
+      statusEl.style.display = '';
+      statusEl.textContent = lender.status;
+      statusEl.className = `status-badge status-${lender.status}`;
+
+      bodyEl.innerHTML = `
+        <div class="field-grid">
+          ${field('Full Name', `${lender.first_name || ''} ${lender.last_name || ''}`.trim())}
+          ${field('Date of Birth', formatDate(lender.dob))}
+          ${field('Phone', lender.phone)}
+          ${field('ID Type', lender.id_type)}
+          ${field('Address', lender.address)}
+          ${field('District', lender.district)}
+          ${field('State', lender.state)}
+          ${field('Pincode', lender.pincode)}
+        </div>
+        <div class="doc-row">
+          ${lender.id_document ? `
+            <div class="doc-thumb">
+              <img src="${BASE}/uploads/${encodeURIComponent(lender.id_document)}" onclick="window.open(this.src)">
+              <div class="doc-label">ID Document</div>
+            </div>` : ''}
+          ${lender.self_photo ? `
+            <div class="doc-thumb">
+              <img src="${BASE}/uploads/${encodeURIComponent(lender.self_photo)}" onclick="window.open(this.src)">
+              <div class="doc-label">Selfie</div>
+            </div>` : ''}
+        </div>
+        <div style="margin-top:1.2rem; border-top:1px dashed var(--border); padding-top:1.2rem;">
+          <div class="field-grid">
+            ${field('Payout Method', lender.bank_details_added ? 'Added' : 'Not added yet')}
+            ${lender.bank_details_added ? field('Account Holder', lender.account_holder_name) : ''}
+            ${lender.bank_details_added && lender.bank_account_number ? field('Account Number', lender.bank_account_number) : ''}
+            ${lender.bank_details_added && lender.bank_ifsc ? field('IFSC', lender.bank_ifsc) : ''}
+            ${lender.bank_details_added && lender.upi_id ? field('UPI ID', lender.upi_id) : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadProfile() {
+      if (!email) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('error').textContent = 'Please log in to view your profile.';
+        return;
+      }
+
+      document.getElementById('email-line').textContent = email;
+
+      try {
+        const res = await fetch(`${BASE}/api/profile/${encodeURIComponent(email)}`);
+        const data = await res.json();
+
+        if (!data.success) throw new Error(data.message || 'Could not load profile');
+
+        renderBorrower(data.borrower);
+        renderLender(data.lender);
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+      } catch (err) {
+        console.error('loadProfile failed:', err);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+        document.getElementById('error').textContent = '⚠️ Could not load your profile. Please try again.';
+      }
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

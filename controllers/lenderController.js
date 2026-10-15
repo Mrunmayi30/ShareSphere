@@ -4,16 +4,23 @@ const db = require("../config/db");
 // Apply to become lender
 exports.applyLender = async (req, res) => {
     try {
-        const { firstName, lastName, dob, email, phone, address, state, district, pincode, idType } = req.body;
+        const {
+            firstName, lastName, dob, email, phone, address, state, district, pincode, idType,
+            accountHolderName, bankAccountNumber, bankIfsc, upiId
+        } = req.body;
         const idDocFile = req.files?.idDocument ? req.files.idDocument[0].filename : null;
         const selfPhotoFile = req.files?.selfPhoto ? req.files.selfPhoto[0].filename : null;
 
         const sql = `
             INSERT INTO lender_requests
-            (first_name, last_name, dob, email, phone, address, state, district, pincode, id_type, id_document, self_photo, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')
+            (first_name, last_name, dob, email, phone, address, state, district, pincode, id_type, id_document, self_photo,
+             account_holder_name, bank_account_number, bank_ifsc, upi_id, bank_details_added, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'Pending')
         `;
-        await db.execute(sql, [firstName, lastName, dob, email, phone, address, state, district, pincode, idType, idDocFile, selfPhotoFile]);
+        await db.execute(sql, [
+            firstName, lastName, dob, email, phone, address, state, district, pincode, idType, idDocFile, selfPhotoFile,
+            accountHolderName, bankAccountNumber || null, bankIfsc || null, upiId || null
+        ]);
         res.json({ success: true, message: "Verification request submitted" });
 
     } catch (err) {
@@ -77,5 +84,46 @@ exports.updateRequestStatus = async (req, res) => {
     } catch (err) {
         console.error("updateRequestStatus error:", err);
         res.status(500).json({ success: false, message: "Failed to update status" });
+    }
+};
+
+// Save lender's payout details
+exports.saveBankDetails = async (req, res) => {
+    try {
+        const { email, account_holder_name, bank_account_number, bank_ifsc, upi_id } = req.body;
+
+        if (!email || !account_holder_name || (!bank_account_number && !upi_id)) {
+            return res.status(400).json({ success: false, message: "Missing required fields" });
+        }
+
+        await db.execute(
+            `UPDATE lender_requests
+             SET account_holder_name = ?, bank_account_number = ?, bank_ifsc = ?, upi_id = ?, bank_details_added = 1
+             WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))`,
+            [account_holder_name, bank_account_number || null, bank_ifsc || null, upi_id || null, email]
+        );
+
+        res.json({ success: true, message: "Bank details saved" });
+
+    } catch (err) {
+        console.error("saveBankDetails error:", err);
+        res.status(500).json({ success: false, message: "Could not save bank details" });
+    }
+};
+
+// Fetch lender's payout details
+exports.getBankDetails = async (req, res) => {
+    try {
+        const { email } = req.params;
+        const [rows] = await db.execute(
+            `SELECT account_holder_name, bank_account_number, bank_ifsc, upi_id, bank_details_added
+             FROM lender_requests WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))`,
+            [email]
+        );
+        res.json(rows[0] || { bank_details_added: 0 });
+
+    } catch (err) {
+        console.error("getBankDetails error:", err);
+        res.status(500).json({ success: false, message: "Failed to fetch bank details" });
     }
 };

@@ -60,7 +60,7 @@
 
         <div class="form-row">
             <label>Pincode <span style="color:red">*</span></label>
-            <input type="text" id="pincode" required maxlength="6" pattern="[0-9]{6}" placeholder="Enter 6-digit pincode">
+            <input type="text" id="pincode" required maxlength="6" pattern="[0-9]{6}" inputmode="numeric" placeholder="Enter 6-digit pincode">
         </div>
 
         <div class="form-row">
@@ -101,22 +101,27 @@ document.addEventListener("DOMContentLoaded", function() {
     const email = localStorage.getItem("loggedInUser");
     if (!email) return window.location.href = "login.html";
 
-    // Check existing borrower status
+    // Check existing borrower status BEFORE showing the form
     fetch("/api/borrowers/status/" + encodeURIComponent(email))
     .then(res => res.json())
     .then(data => {
         if (data.status === "Verified") {
-            const itemId = sessionStorage.getItem("rentItemId");
-            if (itemId) return window.location.href = "item-details.html?id=" + itemId;
-            return window.location.href = "index.html";
-        } else if (data.status === "pending") {
+            return window.location.href = "borrower-success.html";
+        } else if (data.status === "Pending") {
             return window.location.href = "borrower-waiting.html?email=" + encodeURIComponent(email);
+        } else if (data.status === "Rejected") {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get("reapply") === "true") {
+                return loadUserData(email);
+            }
+            return window.location.href = "borrower-failed.html";
         }
+        // No application yet → fall through and show the form
         loadUserData(email);
     })
     .catch(err => {
         console.error(err);
-        loadUserData(email);
+        loadUserData(email); // on error, just show the form
     });
 
     function loadUserData(email) {
@@ -155,6 +160,13 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     document.getElementById("phone").addEventListener("input", function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // FIX: pattern="[0-9]{6}" only validates at submit time — it doesn't
+    // stop letters/symbols from being typed. Strip anything non-numeric as
+    // the user types, same approach as the phone field above.
+    document.getElementById("pincode").addEventListener("input", function() {
         this.value = this.value.replace(/[^0-9]/g, '');
     });
 });

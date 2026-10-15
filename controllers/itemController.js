@@ -96,14 +96,25 @@ exports.getItems = async (req, res) => {
   try {
     const category = req.query.category;
 
+    const baseSelect = `
+      SELECT i.*,
+        EXISTS (
+          SELECT 1 FROM bookings b
+          WHERE b.item_id = i.id
+            AND b.payment_status IN ('HELD_IN_ESCROW', 'RENT_RELEASED')
+            AND b.end_date >= CURDATE()
+        ) AS is_booked
+      FROM items i
+    `;
+
     let query;
     let params;
 
     if (category) {
-      query = 'SELECT * FROM items WHERE category = ? ORDER BY created_at DESC';
+      query = baseSelect + ' WHERE i.category = ? ORDER BY i.created_at DESC';
       params = [category];
     } else {
-      query = 'SELECT * FROM items ORDER BY created_at DESC';
+      query = baseSelect + ' ORDER BY i.created_at DESC';
       params = [];
     }
 
@@ -131,7 +142,13 @@ exports.getItemById = async (req, res) => {
          i.*,
          CONCAT(lr.first_name, ' ', lr.last_name) AS lender_name,
          lr.phone                                  AS lender_phone,
-         lr.email                                  AS lender_email
+         lr.email                                  AS lender_email,
+         EXISTS (
+           SELECT 1 FROM bookings b
+           WHERE b.item_id = i.id
+             AND b.payment_status IN ('HELD_IN_ESCROW', 'RENT_RELEASED')
+             AND b.end_date >= CURDATE()
+         ) AS is_booked
        FROM items i
        LEFT JOIN lender_requests lr
          ON LOWER(TRIM(lr.email)) = LOWER(TRIM(i.owner_email))

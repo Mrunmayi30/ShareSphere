@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="css/assets/logo1.png">
   <title>Item Details – ShareSphere</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
@@ -102,6 +103,33 @@
     .owner-name { font-weight: 600; font-size: 0.93rem; color: var(--forest); }
     .owner-label { font-size: 0.76rem; color: var(--muted); font-weight: 500; }
     .owner-verified { display: flex; align-items: center; gap: 0.3rem; font-size: 0.74rem; color: var(--forest); font-weight: 600; margin-top: 0.15rem; }
+    .owner-rating { display: none; align-items: center; gap: 0.35rem; font-size: 0.8rem; font-weight: 700; color: #a06600; margin-top: 0.2rem; }
+    .owner-rating .stars { color: #f0a500; letter-spacing: 0.08rem; }
+    .owner-rating .count { font-size: 0.74rem; font-weight: 500; color: var(--muted); }
+
+    /* ── Amazon-style rating summary under the title ── */
+    .rating-summary { display: none; align-items: center; gap: 0.5rem; margin-bottom: 0.9rem; }
+    .rating-summary .stars { color: #f0a500; font-size: 1rem; letter-spacing: 0.06rem; }
+    .rating-summary .value { font-size: 0.85rem; font-weight: 700; color: var(--forest); }
+    .rating-summary .count-link { font-size: 0.8rem; font-weight: 500; color: var(--forest); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; opacity: 0.75; }
+    .rating-summary .count-link:hover { opacity: 1; }
+
+    /* ── Full Ratings & Reviews section at the bottom ── */
+    .reviews-overview { display: none; align-items: center; gap: 1.2rem; padding-bottom: 1.1rem; margin-bottom: 1.1rem; border-bottom: 1px solid var(--border); }
+    .reviews-overview-score { font-size: 2.4rem; font-weight: 700; color: var(--forest); line-height: 1; }
+    .reviews-overview-mid { display: flex; flex-direction: column; gap: 0.25rem; }
+    .reviews-overview-stars { color: #f0a500; font-size: 1.15rem; letter-spacing: 0.08rem; }
+    .reviews-overview-count { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+    .reviews-list { display: flex; flex-direction: column; gap: 1.1rem; }
+    .review-item { padding-bottom: 1.1rem; border-bottom: 1px solid var(--border); }
+    .review-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .review-item-top { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.3rem; }
+    .review-item-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--mint-soft); color: var(--forest); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.82rem; flex-shrink: 0; }
+    .review-item-name { font-size: 0.85rem; font-weight: 600; color: var(--forest); }
+    .review-item-stars { color: #f0a500; font-size: 0.85rem; letter-spacing: 0.06rem; margin-bottom: 0.25rem; }
+    .review-item-date { font-size: 0.72rem; color: var(--muted); font-weight: 500; margin-bottom: 0.35rem; }
+    .review-item-text { font-size: 0.87rem; line-height: 1.6; color: var(--forest); opacity: 0.9; white-space: pre-wrap; }
+    .reviews-empty { font-size: 0.85rem; color: var(--muted); }
 
     /* ── CTA ── */
     .cta-group { display: flex; gap: 0.75rem; margin-top: 0.5rem; }
@@ -111,24 +139,39 @@
     .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     .btn-call { background: var(--forest); color: var(--white); box-shadow: 0 4px 20px rgba(25,63,52,0.3); }
     .btn-call:hover:not(:disabled) { background: var(--forest-deep); box-shadow: 0 8px 28px rgba(25,63,52,0.4); }
-    .btn-email { background: var(--white); color: var(--forest); border: 1.5px solid var(--border); box-shadow: 0 2px 8px rgba(25,63,52,0.06); }
-    .btn-email:hover:not(:disabled) { border-color: var(--forest); box-shadow: 0 4px 16px rgba(25,63,52,0.12); }
-
-    /* ── Contact panel ── */
-    .contact-panel { display: none; flex-direction: column; gap: 0.6rem; margin-top: 0.75rem; background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 1rem 1.2rem; box-shadow: 0 2px 12px rgba(25,63,52,0.06); animation: slideDown 0.25s ease; }
-    .contact-panel.visible { display: flex; }
-    @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
-    .contact-row { display: flex; align-items: center; gap: 0.75rem; }
-    .contact-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(25,63,52,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .contact-detail { display: flex; flex-direction: column; }
-    .contact-label { font-size: 0.7rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
-    .contact-value { font-size: 0.92rem; font-weight: 600; color: var(--forest); text-decoration: none; }
-    .contact-value:hover { text-decoration: underline; }
-    .contact-divider { height: 1px; background: var(--border); margin: 0.2rem 0; }
+    .escrow-hint { display:flex; align-items:center; gap:0.4rem; justify-content:center; margin-top:0.7rem; font-size:0.76rem; color: var(--muted); font-weight:500; }
 
     /* ── Toast ── */
     #toast { display: none; position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--forest); color: var(--white); padding: 1rem 1.75rem; border-radius: 14px; font-size: 0.88rem; font-weight: 600; box-shadow: 0 8px 32px rgba(25,63,52,0.35); z-index: 9999; text-align: center; max-width: 400px; width: calc(100% - 2rem); line-height: 1.5; animation: toastIn 0.3s ease; }
     @keyframes toastIn { from { opacity:0; transform: translateX(-50%) translateY(20px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+
+    /* ── Booking modal ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(13,39,31,0.55); z-index: 10000; align-items: center; justify-content: center; padding: 1.5rem; }
+    .modal-overlay.visible { display: flex; }
+    .modal-box { background: var(--white); border-radius: 18px; max-width: 460px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 60px rgba(13,39,31,0.35); animation: modalIn 0.25s ease; }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.4rem 1.6rem 0.5rem; }
+    .modal-header h3 { font-size: 1.15rem; font-weight: 700; color: var(--forest); }
+    .modal-close { background: none; border: none; font-size: 1.4rem; line-height: 1; color: var(--muted); cursor: pointer; padding: 0.2rem 0.4rem; }
+    .modal-close:hover { color: var(--forest); }
+    .modal-body { padding: 0.6rem 1.6rem 0.4rem; display: flex; flex-direction: column; gap: 1rem; }
+    .modal-row { display: flex; flex-direction: column; gap: 0.35rem; }
+    .modal-row label { font-size: 0.76rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+    .modal-row input, .modal-row select {
+      padding: 0.7rem 0.85rem; border-radius: 10px; border: 1.5px solid var(--border);
+      font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: var(--forest); background: var(--off-white);
+    }
+    .modal-row input:focus, .modal-row select:focus { outline: none; border-color: var(--forest); }
+    .modal-row-pair { display: flex; gap: 0.8rem; }
+    .modal-row-pair .modal-row { flex: 1; }
+    .booking-summary { background: var(--mint-soft); border: 1.5px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; }
+    .summary-line { display: flex; justify-content: space-between; font-size: 0.86rem; color: var(--forest); padding: 0.2rem 0; }
+    .summary-line.total { border-top: 1px solid var(--border); margin-top: 0.4rem; padding-top: 0.55rem; font-weight: 700; font-size: 0.94rem; }
+    .escrow-note { font-size: 0.74rem; color: var(--muted); line-height: 1.5; margin-top: 0.6rem; }
+    .booking-error { background: #fff0f0; border: 1.5px solid rgba(220,53,69,0.25); color: #c0392b; font-size: 0.82rem; font-weight: 600; padding: 0.65rem 0.85rem; border-radius: 10px; }
+    .modal-footer { padding: 0.8rem 1.6rem 1.6rem; }
+    .modal-footer .btn { width: 100%; }
+    .checking-availability { font-size: 0.8rem; color: var(--muted); font-weight: 500; display: flex; align-items: center; gap: 0.4rem; }
   </style>
 </head>
 <body>
@@ -161,6 +204,11 @@
         <div class="item-info">
           <div class="category-tag" id="item-category"></div>
           <h1 class="item-title" id="item-title"></h1>
+          <div class="rating-summary" id="rating-summary">
+            <span class="stars" id="rating-summary-stars"></span>
+            <span class="value" id="rating-summary-value"></span>
+            <a class="count-link" id="rating-summary-count" onclick="document.getElementById('reviews-section').scrollIntoView({behavior:'smooth'})"></a>
+          </div>
           <div class="meta-row">
             <div class="condition-badge" id="item-condition"></div>
             <span class="listing-date" id="item-date"></span>
@@ -217,6 +265,11 @@
               <div class="owner-info">
                 <div class="owner-name" id="owner-name"></div>
                 <div class="owner-label">Verified Lender</div>
+                <div class="owner-rating" id="owner-rating">
+                  <span class="stars" id="owner-rating-stars"></span>
+                  <span id="owner-rating-value"></span>
+                  <span class="count" id="owner-rating-count"></span>
+                </div>
                 <div class="owner-verified">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   Identity Verified
@@ -225,50 +278,34 @@
             </div>
           </div>
 
-          <!-- CTA buttons -->
+          <!-- CTA -->
           <div class="section" style="border-top:none; padding-top:0.5rem;">
             <div class="cta-group">
-              <button class="btn btn-call" id="callBtn" onclick="handleCall()">
+              <button class="btn btn-call" id="bookBtn" onclick="openBookingModal()">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1.06h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.21-1.21a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
-                Call Owner
-              </button>
-              <button class="btn btn-email" id="emailBtn" onclick="handleEmail()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-                Email Owner
+                Request to Book
               </button>
             </div>
+            <div class="escrow-hint">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Payment is held securely until pickup is confirmed
+            </div>
+          </div>
 
-            <div class="contact-panel" id="contactPanel">
-              <div class="contact-row" id="phoneRow" style="display:none;">
-                <div class="contact-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#193f34" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1.06h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.21-1.21a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
-                  </svg>
-                </div>
-                <div class="contact-detail">
-                  <span class="contact-label">Phone</span>
-                  <a class="contact-value" id="phoneLink" href="#">—</a>
-                </div>
-              </div>
-              <div class="contact-divider" id="contactDivider" style="display:none;"></div>
-              <div class="contact-row" id="emailRow" style="display:none;">
-                <div class="contact-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#193f34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
-                  </svg>
-                </div>
-                <div class="contact-detail">
-                  <span class="contact-label">Email</span>
-                  <a class="contact-value" id="emailLink" href="#">—</a>
-                </div>
+          <!-- Ratings & Reviews -->
+          <div class="section" id="reviews-section">
+            <div class="section-title">Ratings &amp; Reviews</div>
+            <div class="reviews-overview" id="reviews-overview">
+              <div class="reviews-overview-score" id="reviews-overview-score"></div>
+              <div class="reviews-overview-mid">
+                <div class="reviews-overview-stars" id="reviews-overview-stars"></div>
+                <div class="reviews-overview-count" id="reviews-overview-count"></div>
               </div>
             </div>
+            <div class="reviews-list" id="reviews-list"></div>
+            <div class="reviews-empty" id="reviews-empty" style="display:none;">No reviews yet for this lender.</div>
           </div>
 
         </div><!-- end .item-info -->
@@ -276,12 +313,90 @@
     </div>
   </div>
 
+  <!-- ── Booking modal ── -->
+  <div class="modal-overlay" id="bookingModalOverlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Request to book</h3>
+        <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-row">
+          <label>Pickup Date</label>
+          <input type="date" id="startDate">
+        </div>
+        <div class="modal-row">
+          <label>Rental Duration</label>
+          <select id="duration">
+            <option value="week:1">1 Week</option>
+            <option value="week:2">2 Weeks</option>
+            <option value="month:1" selected>1 Month</option>
+            <option value="month:2">2 Months</option>
+            <option value="month:3">3 Months</option>
+            <option value="month:6">6 Months</option>
+          </select>
+        </div>
+        <div class="modal-row" id="returnDateRow" style="display:none;">
+          <label>Return Date</label>
+          <input type="text" id="endDateDisplay" readonly style="background:var(--mint-soft); font-weight:600;">
+        </div>
+        <div class="modal-row">
+          <label>Preferred Pickup Time</label>
+          <select id="pickupTime">
+            <option value="Morning (9am–12pm)">Morning (9am–12pm)</option>
+            <option value="Afternoon (12pm–4pm)">Afternoon (12pm–4pm)</option>
+            <option value="Evening (4pm–8pm)">Evening (4pm–8pm)</option>
+          </select>
+        </div>
+
+        <div class="checking-availability" id="checkingAvailability" style="display:none;">
+          <div class="spinner" style="width:14px;height:14px;border-width:2px;"></div>
+          Checking availability...
+        </div>
+
+        <div class="booking-summary" id="bookingSummary" style="display:none;">
+          <div class="summary-line"><span>Duration</span><span id="summaryDays"></span></div>
+          <div class="summary-line"><span>Rent</span><span id="summaryRent"></span></div>
+          <div class="summary-line"><span>Security deposit</span><span id="summaryDeposit"></span></div>
+          <div class="summary-line total"><span>Total payable now</span><span id="summaryTotal"></span></div>
+          <p class="escrow-note">This amount is held in escrow. Rent is released to the lender after pickup is confirmed, and your deposit is refunded after a clean return.</p>
+        </div>
+
+        <div class="booking-error" id="bookingError" style="display:none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-call" id="payBtn" onclick="handleBookingPayment()" disabled>Select dates to continue</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast"></div>
 
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const BASE = 'http://localhost:5000';
     let currentItem = null;
     let mediaItems = [];
+    let currentBooking = null;
+
+    // Individual dates that are already booked for this item ('YYYY-MM-DD'),
+    // loaded once when the modal opens from the real backend endpoint
+    // GET /api/bookings/booked-dates/:itemId (returns { blocked: [...] }).
+    let blockedDates = new Set();
+    let blockedDatesLoaded = false;
+
+    // Bumped on every recomputeSummary() call so a slow/late availability
+    // response can't stomp on a newer date selection.
+    let availabilityCheckToken = 0;
+
+    // ── FIX: track the booking created right before payment ──
+    // handleBookingPayment() creates a booking row *before* Razorpay opens,
+    // so that row must exist for the order to reference it. If the user then
+    // backs out (closes the modal, dismisses Razorpay, or the payment fails),
+    // that booking previously stayed "active" forever and permanently blocked
+    // those dates. currentBookingId lets us explicitly cancel it the moment
+    // the user abandons the flow.
+    let currentBookingId = null;
 
     function getItemId() { return new URLSearchParams(window.location.search).get('id'); }
     function formatPrice(p) { return '₹' + Number(p).toLocaleString('en-IN'); }
@@ -295,6 +410,91 @@
       div.className = 'info-cell' + (spanTwo ? ' span-2' : '');
       div.innerHTML = `<span class="info-cell-label">${label}</span><span class="info-cell-value">${value}</span>`;
       grid.appendChild(div);
+    }
+
+    /* ── Owner rating: fetches the lender's average rating + review count
+       from GET /api/reviews/user/:email and shows it in three places —
+       next to their name in the owner card, right under the item title
+       (Amazon-style), and as the big overview number in the Ratings &
+       Reviews section. Stays hidden (default in CSS) if zero reviews. ── */
+    async function loadOwnerRating(email) {
+      if (!email) return;
+      try {
+        const res = await fetch(`${BASE}/api/reviews/user/${encodeURIComponent(email)}`);
+        const data = await res.json();
+        if (data.success && data.review_count > 0) {
+          const rounded = Math.round(Number(data.avg_rating));
+          const starsFull = '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
+          const countLabel = `${data.review_count} review${data.review_count > 1 ? 's' : ''}`;
+
+          // Owner card (small, next to lender name)
+          document.getElementById('owner-rating-stars').textContent = starsFull;
+          document.getElementById('owner-rating-value').textContent = data.avg_rating;
+          document.getElementById('owner-rating-count').textContent = `(${countLabel})`;
+          document.getElementById('owner-rating').style.display = 'flex';
+
+          // Top summary under the title (Amazon-style)
+          document.getElementById('rating-summary-stars').textContent = starsFull;
+          document.getElementById('rating-summary-value').textContent = data.avg_rating;
+          document.getElementById('rating-summary-count').textContent = countLabel;
+          document.getElementById('rating-summary').style.display = 'flex';
+
+          // Big overview number in the Ratings & Reviews section
+          document.getElementById('reviews-overview-score').textContent = data.avg_rating;
+          document.getElementById('reviews-overview-stars').textContent = starsFull;
+          document.getElementById('reviews-overview-count').textContent =
+            `Based on ${countLabel}`;
+          document.getElementById('reviews-overview').style.display = 'flex';
+        }
+        loadReviewsList(email);
+      } catch (err) {
+        console.error('loadOwnerRating failed:', err);
+      }
+    }
+
+    // Masks a reviewer's email for light privacy in the public review list,
+    // e.g. "priya.sharma@gmail.com" -> "pr***@gmail.com"
+    function maskEmail(email) {
+      if (!email) return 'Verified Renter';
+      const [local, domain] = email.split('@');
+      if (!domain) return 'Verified Renter';
+      const visible = local.slice(0, 2);
+      return `${visible}***@${domain}`;
+    }
+
+    /* ── Individual reviews list (Amazon-style), from
+       GET /api/reviews/user/:email/list ── */
+    async function loadReviewsList(email) {
+      const listEl = document.getElementById('reviews-list');
+      const emptyEl = document.getElementById('reviews-empty');
+      try {
+        const res = await fetch(`${BASE}/api/reviews/user/${encodeURIComponent(email)}/list`);
+        const data = await res.json();
+        if (!data.success || !Array.isArray(data.reviews) || !data.reviews.length) {
+          emptyEl.style.display = 'block';
+          return;
+        }
+        emptyEl.style.display = 'none';
+        listEl.innerHTML = data.reviews.map(r => {
+          const masked = maskEmail(r.reviewer_email);
+          const initial = masked.charAt(0).toUpperCase();
+          const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+          return `
+            <div class="review-item">
+              <div class="review-item-top">
+                <div class="review-item-avatar">${initial}</div>
+                <div class="review-item-name">${masked}</div>
+              </div>
+              <div class="review-item-stars">${stars}</div>
+              <div class="review-item-date">${formatDate(r.created_at)}</div>
+              ${r.comment ? `<div class="review-item-text">${r.comment.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('loadReviewsList failed:', err);
+        emptyEl.style.display = 'block';
+      }
     }
 
     /* ── Gallery ── */
@@ -362,6 +562,17 @@
     function renderItem(item) {
       document.title = item.title + ' – ShareSphere';
 
+      if (Number(item.is_booked)) {
+        const bookBtn = document.getElementById('bookBtn');
+        bookBtn.disabled = true;
+        bookBtn.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Currently Rented
+        `;
+      }
+
       document.getElementById('breadcrumb').innerHTML =
         `<a href="/index.html">Home</a><span class="breadcrumb-sep">›</span>` +
         `<a href="index.html?category=${encodeURIComponent(item.category)}">${item.category}</a>` +
@@ -389,10 +600,10 @@
 
       /* Deposit strip */
       const depositVal = item.deposit ?? item.security_deposit ?? null;
-if (depositVal !== null && depositVal !== '' && Number(depositVal) >= 0) {
-  document.getElementById('deposit-strip').style.display = 'flex';
-  document.getElementById('item-deposit').textContent = formatPrice(depositVal);
-}
+      if (depositVal !== null && depositVal !== '' && Number(depositVal) >= 0) {
+        document.getElementById('deposit-strip').style.display = 'flex';
+        document.getElementById('item-deposit').textContent = formatPrice(depositVal);
+      }
 
       /* ── Specifications grid ── */
       const specsGrid = document.getElementById('specs-grid');
@@ -435,6 +646,7 @@ if (depositVal !== null && depositVal !== '' && Number(depositVal) >= 0) {
       const displayName = item.lender_name || item.owner_email;
       document.getElementById('owner-avatar').textContent = getInitials(displayName);
       document.getElementById('owner-name').textContent = displayName;
+      loadOwnerRating(item.owner_email);
 
       buildGallery(item.image_paths, item.video_path);
       document.getElementById('loading').style.display = 'none';
@@ -453,21 +665,7 @@ if (depositVal !== null && depositVal !== '' && Number(depositVal) >= 0) {
       setTimeout(() => { toast.style.display = 'none'; }, duration);
     }
 
-    function setButtonLoading(btnId, loading) {
-      const btn = document.getElementById(btnId);
-      if (!btn) return;
-      btn.disabled = loading;
-      if (btnId === 'callBtn') {
-        btn.innerHTML = loading
-          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.8s linear infinite"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg> Checking...`
-          : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1.06h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.21-1.21a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> Call Owner`;
-      } else {
-        btn.innerHTML = loading
-          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.8s linear infinite"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg> Checking...`
-          : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Email Owner`;
-      }
-    }
-
+    /* ── Borrower gate: must be logged in AND KYC-verified before booking ── */
     async function checkBorrowerAccess() {
       const email = localStorage.getItem('loggedInUser');
       if (!email) {
@@ -475,73 +673,346 @@ if (depositVal !== null && depositVal !== '' && Number(depositVal) >= 0) {
         window.location.href = 'register.html';
         return false;
       }
+      try {
+        const res = await fetch(`${BASE}/api/borrowers/status/${encodeURIComponent(email)}`);
+        const data = await res.json();
+        if (data.status !== 'Verified') {
+          sessionStorage.setItem('rentItemId', getItemId());
+          window.location.href = 'borrower-form.html';
+          return false;
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('⚠️ Could not confirm your verification status. Please try again.');
+        return false;
+      }
       return true;
     }
 
-    function revealContactPanel() {
-      document.getElementById('contactPanel').classList.add('visible');
+    /* ── Availability: load this item's already-booked dates ──
+       Real backend route: GET /api/bookings/booked-dates/:itemId → { blocked: [...] }.
+       If it errors, we just skip the client-side pre-check and rely on the
+       server's own conflict check (409) at booking-creation time. */
+    async function loadBlockedDates() {
+      if (blockedDatesLoaded) return;
+      try {
+        const res = await fetch(`${BASE}/api/bookings/booked-dates/${getItemId()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.blocked)) {
+            blockedDates = new Set(data.blocked);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not load blocked dates (skipping client-side availability check):', err);
+      } finally {
+        blockedDatesLoaded = true;
+      }
     }
 
-    function populateContactPanel(phone, email) {
-      const phoneRow  = document.getElementById('phoneRow');
-      const emailRow  = document.getElementById('emailRow');
-      const divider   = document.getElementById('contactDivider');
-      const phoneLink = document.getElementById('phoneLink');
-      const emailLink = document.getElementById('emailLink');
-      if (phone) {
-        phoneLink.href = 'tel:' + phone.replace(/\s+/g, '');
-        phoneLink.textContent = phone;
-        phoneRow.style.display = 'flex';
+    // startD is the pickup date (inclusive), endD is the computed return date
+    // (exclusive — the borrower occupies startD .. endD-1). Checks every day
+    // in that span against the blocked-dates set from the backend.
+    function isRangeBooked(startD, endD) {
+      const cur = new Date(startD);
+      const last = new Date(endD);
+      last.setDate(last.getDate() - 1);
+      while (cur <= last) {
+        if (blockedDates.has(cur.toISOString().split('T')[0])) return true;
+        cur.setDate(cur.getDate() + 1);
       }
-      if (email) {
-        const subject = encodeURIComponent('Rental Enquiry: ' + (currentItem.title || 'Item'));
-        const body = encodeURIComponent(`Hi,\n\nI'm interested in renting "${currentItem.title}" listed on ShareSphere.\n\nPrice: ₹${currentItem.price_per_month ?? currentItem.price_per_day}/month\n\nPlease let me know the availability.\n\nThanks`);
-        emailLink.href = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(email)}&su=${subject}&body=${body}`;
-        emailLink.target = '_blank';
-        emailLink.rel = 'noopener noreferrer';
-        emailLink.textContent = email;
-        emailRow.style.display = 'flex';
-      }
-      if (phone && email) divider.style.display = 'block';
+      return false;
     }
 
-    function getLenderContacts() {
-      return {
-        phone: currentItem.lender_phone || null,
-        email: currentItem.lender_email || currentItem.owner_email || null,
+    /* ── FIX: cancel a booking that was created but never paid for ──
+       Called whenever the user backs out after handleBookingPayment() has
+       already created the booking row (modal closed, Razorpay dismissed,
+       payment failed, or the tab is closed mid-flow). Fire-and-forget —
+       we don't block the UI on this, and a missing/failed cancel endpoint
+       degrades gracefully (see note below).
+
+       Requires a backend route, e.g.:
+         POST /api/bookings/:id/cancel
+       which should only cancel bookings that are still "pending payment"
+       (never mark a paid/confirmed booking as cancelled from this call).
+       As a second line of defense, the backend should also auto-expire any
+       booking left in "pending payment" for more than a few minutes, so a
+       lost network request here can't permanently block dates either. */
+    function cancelPendingBooking(useBeacon) {
+      if (!currentBookingId) return;
+      const id = currentBookingId;
+      currentBookingId = null;
+      const url = `${BASE}/api/bookings/${id}/cancel`;
+      const payload = JSON.stringify({ reason: 'abandoned_before_payment' });
+      try {
+        if (useBeacon && navigator.sendBeacon) {
+          navigator.sendBeacon(url, new Blob([payload], { type: 'application/json' }));
+        } else {
+          fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            keepalive: true
+          }).catch(err => console.warn('Could not cancel pending booking:', err));
+        }
+      } catch (err) {
+        console.warn('Could not cancel pending booking:', err);
+      }
+      // Refresh known blocked dates so this item's dates open back up
+      // immediately if the modal is still open / reopened.
+      blockedDatesLoaded = false;
+      blockedDates = new Set();
+    }
+
+    /* ── Booking modal ── */
+    async function openBookingModal() {
+      if (Number(currentItem.is_booked)) {
+        showToast('This item is currently rented and unavailable for booking.');
+        return;
+      }
+      const allowed = await checkBorrowerAccess();
+      if (!allowed) return; // checkBorrowerAccess already redirected
+
+      // Safety reset: any booking from a previous attempt should already
+      // have been cancelled by closeBookingModal()/ondismiss/etc, but never
+      // carry a stale id into a fresh modal session.
+      currentBookingId = null;
+
+      document.getElementById('bookingModalOverlay').classList.add('visible');
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('startDate').min = today;
+
+      // Fetch blocked dates once per modal open so recomputeSummary() can
+      // catch date conflicts before the user reaches the payment step.
+      blockedDatesLoaded = false;
+      blockedDates = new Set();
+      document.getElementById('checkingAvailability').style.display = 'flex';
+      await loadBlockedDates();
+      document.getElementById('checkingAvailability').style.display = 'none';
+    }
+    function closeBookingModal() {
+      document.getElementById('bookingModalOverlay').classList.remove('visible');
+      // FIX: if a booking row was already created for this attempt (payment
+      // flow was started) but never confirmed, release it now instead of
+      // leaving it "active" and blocking these dates forever.
+      if (currentBookingId) cancelPendingBooking();
+    }
+
+    function computeEndDate(startD, unit, value) {
+      const end = new Date(startD);
+      if (unit === 'week') {
+        end.setDate(end.getDate() + value * 7);
+      } else {
+        end.setMonth(end.getMonth() + value);
+      }
+      return end;
+    }
+
+    function recomputeSummary() {
+      availabilityCheckToken++;
+      const start = document.getElementById('startDate').value;
+      const [unit, valueStr] = document.getElementById('duration').value.split(':');
+      const value = Number(valueStr);
+      const errEl = document.getElementById('bookingError');
+      const summaryEl = document.getElementById('bookingSummary');
+      const payBtn = document.getElementById('payBtn');
+      const returnRow = document.getElementById('returnDateRow');
+
+      errEl.style.display = 'none';
+      payBtn.disabled = true;
+      payBtn.textContent = 'Select a pickup date to continue';
+
+      if (!start) { summaryEl.style.display = 'none'; returnRow.style.display = 'none'; currentBooking = null; return; }
+
+      const startD = new Date(start);
+      const endD = computeEndDate(startD, unit, value);
+      const days = Math.round((endD - startD) / 86400000);
+
+      document.getElementById('endDateDisplay').value = formatDate(endD);
+      returnRow.style.display = 'block';
+
+      if (currentItem.min_duration && days < Number(currentItem.min_duration)) {
+        errEl.textContent = `Minimum rental duration is ${currentItem.min_duration} day(s).`;
+        errEl.style.display = 'block'; summaryEl.style.display = 'none'; currentBooking = null; return;
+      }
+      if (currentItem.max_duration && days > Number(currentItem.max_duration)) {
+        errEl.textContent = `Maximum rental duration is ${currentItem.max_duration} day(s).`;
+        errEl.style.display = 'block'; summaryEl.style.display = 'none'; currentBooking = null; return;
+      }
+
+      // ── Client-side availability check (best-effort; server re-validates too) ──
+      if (isRangeBooked(startD, endD)) {
+        errEl.textContent = 'Selected dates are not available. Please choose a different pickup date or duration.';
+        errEl.style.display = 'block';
+        summaryEl.style.display = 'none';
+        currentBooking = null;
+        payBtn.textContent = 'Select different dates to continue';
+        return;
+      }
+
+      const monthlyRate = Number(currentItem.price_per_month ?? 0);
+      const weeklyRate = Math.round(monthlyRate / 4);
+      const rent = unit === 'week' ? weeklyRate * value : monthlyRate * value;
+      const deposit = Number(currentItem.deposit ?? currentItem.security_deposit ?? 0);
+      const total = rent + deposit;
+
+      document.getElementById('summaryDays').textContent =
+        unit === 'week' ? `${value} week${value > 1 ? 's' : ''}` : `${value} month${value > 1 ? 's' : ''}`;
+      document.getElementById('summaryRent').textContent = formatPrice(rent);
+      document.getElementById('summaryDeposit').textContent = formatPrice(deposit);
+      document.getElementById('summaryTotal').textContent = formatPrice(total);
+      summaryEl.style.display = 'block';
+
+      payBtn.disabled = false;
+      payBtn.textContent = `Continue to Payment · ${formatPrice(total)}`;
+
+      currentBooking = {
+        start_date: start,
+        end_date: endD.toISOString().split('T')[0],
+        pickup_time: document.getElementById('pickupTime').value,
+        days, rent_amount: rent, deposit_amount: deposit, total_amount: total
       };
     }
 
-    async function handleCall() {
-      setButtonLoading('callBtn', true);
+    document.getElementById('startDate').addEventListener('change', recomputeSummary);
+    document.getElementById('duration').addEventListener('change', recomputeSummary);
+    document.getElementById('pickupTime').addEventListener('change', () => { if (currentBooking) currentBooking.pickup_time = document.getElementById('pickupTime').value; });
+
+    /* ── Payment: create booking → create Razorpay order → open Checkout → verify ── */
+    async function handleBookingPayment() {
+      if (!currentBooking) return;
       const allowed = await checkBorrowerAccess();
-      setButtonLoading('callBtn', false);
       if (!allowed) return;
-      const { phone } = getLenderContacts();
-      if (!phone) { showToast('⚠️ The lender hasn\'t provided a phone number.'); return; }
-      populateContactPanel(phone, null);
-      revealContactPanel();
-      const a = document.createElement('a');
-      a.href = 'tel:' + phone.replace(/\s+/g, '');
-      a.click();
+
+      const payBtn = document.getElementById('payBtn');
+      const errEl = document.getElementById('bookingError');
+      const summaryEl = document.getElementById('bookingSummary');
+      errEl.style.display = 'none';
+      payBtn.disabled = true;
+      payBtn.textContent = 'Preparing payment...';
+
+      try {
+        // 1. Create the booking request server-side
+        const bookingRes = await fetch(`${BASE}/api/bookings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            item_id: getItemId(),
+            borrower_email: localStorage.getItem('loggedInUser'),
+            start_date: currentBooking.start_date,
+            end_date: currentBooking.end_date,
+            pickup_time: currentBooking.pickup_time,
+            rent_amount: currentBooking.rent_amount,
+            deposit_amount: currentBooking.deposit_amount
+          })
+        });
+        const booking = await bookingRes.json();
+        if (!booking.success) throw new Error(booking.message || 'Could not create the booking.');
+
+        // FIX: remember this booking id so it can be cancelled if the user
+        // backs out anywhere before payment is verified.
+        currentBookingId = booking.booking_id;
+
+        // 2. Ask the server to open a Razorpay order for rent + deposit (held in escrow)
+        const orderRes = await fetch(`${BASE}/api/bookings/${booking.booking_id}/create-order`, { method: 'POST' });
+        const order = await orderRes.json();
+        if (!order.success) throw new Error(order.message || 'Could not start payment.');
+
+        // 3. Open Razorpay Checkout (test mode key, safe to use client-side)
+        const options = {
+          key: order.key_id,
+          amount: order.amount,
+          currency: order.currency || 'INR',
+          name: 'ShareSphere',
+          description: `Booking: ${currentItem.title}`,
+          order_id: order.order_id,
+          handler: function (response) { confirmBookingPayment(booking.booking_id, response); },
+          prefill: { email: localStorage.getItem('loggedInUser') || '' },
+          theme: { color: '#193f34' },
+          modal: {
+            ondismiss: function () {
+              // FIX: user closed the Razorpay window without paying —
+              // release the booking we created in step 1.
+              cancelPendingBooking();
+              payBtn.disabled = false;
+              payBtn.textContent = `Continue to Payment · ${formatPrice(currentBooking.total_amount)}`;
+            }
+          }
+        };
+        const rzp = new Razorpay(options);
+        rzp.on('payment.failed', function () {
+          // FIX: payment genuinely failed — release the booking too.
+          cancelPendingBooking();
+          errEl.textContent = 'Payment failed or was cancelled. No amount was held.';
+          errEl.style.display = 'block';
+          payBtn.disabled = false;
+          payBtn.textContent = `Continue to Payment · ${formatPrice(currentBooking.total_amount)}`;
+        });
+        rzp.open();
+
+      } catch (err) {
+        console.error(err);
+        errEl.textContent = err.message || 'Something went wrong. Please try again.';
+        errEl.style.display = 'block';
+
+        // If the server rejected the booking because the dates are no longer
+        // available, don't leave a stale "Continue to Payment" button up for
+        // the same conflicting dates — force the user to pick new ones.
+        const isDateConflict = /date|available|conflict|overlap/i.test(err.message || '');
+        if (isDateConflict) {
+          currentBooking = null;
+          summaryEl.style.display = 'none';
+          payBtn.disabled = true;
+          payBtn.textContent = 'Select different dates to continue';
+          // Refresh known blocked dates so the client-side check catches this next time
+          blockedDatesLoaded = false;
+          blockedDates = new Set();
+          loadBlockedDates();
+        } else {
+          payBtn.disabled = false;
+          payBtn.textContent = `Continue to Payment · ${formatPrice(currentBooking.total_amount)}`;
+        }
+      }
     }
 
-    async function handleEmail() {
-      setButtonLoading('emailBtn', true);
-      const allowed = await checkBorrowerAccess();
-      setButtonLoading('emailBtn', false);
-      if (!allowed) return;
-      const { email } = getLenderContacts();
-      if (!email) { showToast('⚠️ Lender email is not available.'); return; }
-      populateContactPanel(null, email);
-      revealContactPanel();
-      const subject = encodeURIComponent('Rental Enquiry: ' + (currentItem.title || 'Item'));
-      const body = encodeURIComponent(`Hi,\n\nI'm interested in renting "${currentItem.title}" listed on ShareSphere.\n\nPrice: ₹${currentItem.price_per_month ?? currentItem.price_per_day}/month\n\nPlease let me know the availability.\n\nThanks`);
-      const a = document.createElement('a');
-      a.href = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(email)}&su=${subject}&body=${body}`;
-      a.target = '_blank'; a.rel = 'noopener noreferrer';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    async function confirmBookingPayment(bookingId, razorpayResponse) {
+      try {
+        const res = await fetch(`${BASE}/api/bookings/${bookingId}/verify-payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+            razorpay_order_id: razorpayResponse.razorpay_order_id,
+            razorpay_signature: razorpayResponse.razorpay_signature
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          // FIX: payment is verified/confirmed — this is no longer a
+          // "pending" booking, so clear the id so closeBookingModal() (called
+          // right below) does NOT try to cancel it.
+          currentBookingId = null;
+          closeBookingModal();
+          showToast('✅ Payment secured in escrow. Your booking request has been sent to the lender.', 7000);
+        } else {
+          // Verification failed — we deliberately do NOT auto-cancel here,
+          // since the payment itself may have gone through on Razorpay's
+          // side even though this confirmation call failed. Leave the
+          // booking as "pending" for the backend/support to reconcile
+          // rather than risk releasing dates for a booking that was
+          // actually paid for.
+          showToast('⚠️ Payment verification failed. If money was deducted, it will be auto-refunded.', 7000);
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('⚠️ Could not confirm payment. Contact support if money was deducted.', 7000);
+      }
     }
+
+    // FIX: last line of defense — if the user closes/refreshes the tab while
+    // a booking is pending payment (so none of the handlers above ran),
+    // try to release it via a beacon request that can survive page unload.
+    window.addEventListener('pagehide', () => cancelPendingBooking(true));
 
     loadItem();
   </script>

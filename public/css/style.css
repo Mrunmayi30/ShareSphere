@@ -70,6 +70,8 @@ font-size:30px;
 font-family: "Chiron GoRound TC", sans-serif;
 font-weight:900;
 color:#193f34;
+flex-shrink:0;             /* only the search bar should shrink */
+white-space:nowrap;
 }
 
 .logo img{
@@ -85,6 +87,7 @@ background:white;
 border-radius:25px;
 padding:5px 10px;
 width:600px;
+min-width:0;               /* lets the search bar shrink on smaller screens */
 border:1px solid black;
 }
 
@@ -92,6 +95,7 @@ border:1px solid black;
 border:none;
 outline:none;
 flex:1;
+min-width:0;               /* lets the input shrink inside the search bar */
 padding:7px 10px;
 font-size:14px;
 }
@@ -106,6 +110,11 @@ cursor:pointer;
 display:flex;
 gap:15px;
 margin-right:7px;
+flex-shrink:0;             /* only the search bar should shrink */
+}
+
+.signup, .login, .lender, .my-bookings{
+white-space:nowrap;        /* "Sign Up" etc. never break onto two lines */
 }
 
 .signup{
@@ -189,6 +198,20 @@ display:flex;
 align-items:center;
 gap:20px;
 margin-left:40px;
+flex:1;                    /* use the remaining space in the bar */
+min-width:0;
+overflow-x:auto;           /* chips scroll sideways instead of overflowing the page */
+scrollbar-width:none;
+-webkit-overflow-scrolling:touch;
+}
+
+.category-list::-webkit-scrollbar{
+display:none;
+}
+
+.category-list .category-btn{
+flex:0 0 auto;
+white-space:nowrap;
 }
 
 .category-btn.active{
@@ -304,6 +327,7 @@ background:#f2f2f2;
 .all-cat-wrap {
     position: relative;
     display: inline-block;
+    flex: 0 0 auto;
 }
 .cat-dropdown {
     display: none;
@@ -348,4 +372,127 @@ background:#f2f2f2;
     border: none;
     border-top: 1px solid #f0f0f0;
     margin: 4px 0;
+}
+
+.my-bookings{
+    padding:12px 18px;
+    border-radius:22px;
+    background:white;
+    color:#193f34;
+    border:2px solid #193f34;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.my-bookings:hover{
+    background:#193f34;
+    color:white;
+}
+
+
+/* =====================================================================
+   RESPONSIVE  (everything above is your original desktop design)
+   Breakpoints: 1100px (small laptop) | 900px (tablet) | 520px (phone)
+   ===================================================================== */
+
+/* Slider shape on tablets and phones. Change these if your banners get
+   cropped (e.g. 16 / 7 for a wider, shorter banner). */
+:root{
+    --slider-ratio: 16 / 9;
+}
+
+/* ---------- Small laptops ---------- */
+@media (max-width: 1100px){
+    .topbar{ padding-left:24px; padding-right:24px; }
+    .midbar{ padding-left:24px; }
+    .category-list{ margin-left:24px; gap:14px; }
+    .auth-buttons{ gap:10px; }
+    .signup, .login, .lender, .my-bookings{ padding:10px 14px; font-size:14px; }
+}
+
+/* ---------- Tablets ---------- */
+@media (max-width: 900px){
+
+    /* Top bar: logo + buttons on the first row, search bar on its own row */
+    .topbar{
+        height:auto;
+        flex-wrap:wrap;
+        row-gap:10px;
+        padding:10px 20px;
+    }
+    .logo{ order:1; font-size:26px; }
+    .auth-buttons{
+        order:2;
+        margin-right:0;
+        margin-left:auto;
+        flex-wrap:wrap;
+        justify-content:flex-end;
+    }
+    .search-container{
+        order:3;
+        flex:1 1 100%;
+        width:100%;
+        box-sizing:border-box;
+    }
+
+    /* Category bar: the chips scroll sideways */
+    .midbar{
+        height:auto;
+        min-height:60px;
+        padding:10px 20px;
+        box-sizing:border-box;
+    }
+    .category-list{ margin-left:14px; }
+    .cat-dropdown{
+        max-width:calc(100vw - 40px);
+        max-height:70vh;
+        overflow-y:auto;
+    }
+
+    /* Slider: height follows the screen width instead of the screen height */
+    .display-bar{ height:auto; }
+    .slider{ height:auto; }
+    .slides img{
+        height:auto;
+        aspect-ratio:var(--slider-ratio);
+    }
+    .prev, .next{ font-size:22px; padding:8px 13px; }
+}
+
+/* ---------- Phones ---------- */
+@media (max-width: 520px){
+
+    /* A 3-row sticky bar would eat the screen, so it scrolls away on phones */
+    .topbar{
+        position:relative;
+        padding:10px 14px;
+    }
+    .logo{ font-size:24px; }
+    .logo img{ height:30px; }
+
+    /* Buttons share one tidy full-width row */
+    .auth-buttons{
+        flex:1 1 100%;
+        justify-content:space-between;
+    }
+    .signup, .login, .lender, .my-bookings{
+        flex:1 1 auto;
+        justify-content:center;
+        text-align:center;
+    }
+
+    /* The user icon sits at the left of the button row on phones, so its
+       dropdown has to open to the right instead of off-screen to the left */
+    .user-menu{ flex:0 0 auto; padding:0 6px; }
+    .dropdown{ left:0; right:auto; }
+
+    .midbar{ padding:8px 14px; }
+    .category-btn{ padding:9px 14px; font-size:14px; }
+    .category-list{ gap:10px; }
+
+    .prev, .next{ font-size:18px; padding:6px 11px; }
 }

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" href="css/assets/logo1.png">
+  <title>My Bookings – ShareSphere</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --forest: #193f34; --forest-deep: #0d271f;
+      --white: #ffffff; --off-white: #f5f9f7;
+      --muted: rgba(25,63,52,0.5); --border: rgba(25,63,52,0.12);
+      --mint-soft: #e8f5f0;
+    }
+    body { background: var(--off-white); color: var(--forest); font-family: 'Montserrat', sans-serif; min-height: 100vh; }
+    nav { position: sticky; top: 0; z-index: 100; background: var(--forest); padding: 0 2rem; height: 62px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 16px rgba(25,63,52,0.2); }
+    .nav-brand { font-weight: 600; font-size: 1.25rem; color: var(--white); text-decoration: none; letter-spacing: 0.04em; }
+    .nav-back { color: rgba(255,255,255,0.7); font-size: 0.88rem; font-weight: 500; text-decoration: none; }
+    .nav-back:hover { color: var(--white); }
+
+    .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.2rem; }
+
+    .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 0.3rem; width: fit-content; }
+    .tab-btn { border: none; background: none; padding: 0.55rem 1.2rem; border-radius: 9px; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.86rem; color: var(--muted); cursor: pointer; }
+    .tab-btn.active { background: var(--forest); color: var(--white); }
+
+    #empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 0.9rem; display: none; }
+
+    .booking-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 1.1rem 1.3rem; margin-bottom: 1rem; box-shadow: 0 2px 12px rgba(25,63,52,0.06); }
+    .bc-top { display: flex; gap: 1rem; align-items: flex-start; }
+    .bc-thumb { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; background: var(--mint-soft); flex-shrink: 0; }
+    .bc-info { flex: 1; min-width: 0; }
+    .bc-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
+    .bc-meta { font-size: 0.8rem; color: var(--muted); }
+    .bc-amount { font-weight: 700; font-size: 1.05rem; white-space: nowrap; }
+
+    .status-badge { display: inline-flex; align-items: center; gap: 0.3rem; border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; margin-top: 0.5rem; }
+    .status-PENDING_PAYMENT, .status-UNPAID { background: #fff4e0; color: #a06600; }
+    .status-CONFIRMED, .status-HELD_IN_ESCROW { background: var(--mint-soft); color: var(--forest); }
+    .status-ACTIVE, .status-RENT_RELEASED { background: #e3f0ff; color: #1a5c9e; }
+    .status-COMPLETED { background: #e6f7e9; color: #1e7a34; }
+    .status-CANCELLED, .status-DISPUTED { background: #fde8e8; color: #c0392b; }
+
+    .bc-actions { display: flex; gap: 0.6rem; margin-top: 0.9rem; flex-wrap: wrap; }
+    .btn { border: none; border-radius: 9px; padding: 0.55rem 1rem; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.82rem; cursor: pointer; }
+    .btn-primary { background: var(--forest); color: var(--white); }
+    .btn-primary:hover { background: var(--forest-deep); }
+    .btn-outline { background: none; border: 1.5px solid var(--border); color: var(--forest); }
+    .btn-outline:hover { background: var(--mint-soft); }
+    .btn-danger-outline { background: none; border: 1.5px solid #e5b3b3; color: #c0392b; }
+    .btn-danger-outline:hover { background: #fde8e8; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .timeline, .pickup-details { margin-top: 1rem; border-top: 1px dashed var(--border); padding-top: 1rem; display: none; }
+    .timeline.open, .pickup-details.open { display: block; }
+    .tl-item { display: flex; gap: 0.7rem; align-items: flex-start; margin-bottom: 0.8rem; }
+    .tl-item:last-child { margin-bottom: 0; }
+    .tl-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--mint-soft); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.85rem; }
+    .tl-body { flex: 1; }
+    .tl-title { font-size: 0.84rem; font-weight: 600; }
+    .tl-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
+
+    .bc-otp { background: var(--mint-soft); border: 1.5px dashed var(--border); border-radius: 10px; padding: 0.6rem 0.9rem; font-size: 0.85rem; margin-top: 0.8rem; color: var(--forest); }
+    .bc-otp strong { font-size: 1.1rem; letter-spacing: 0.1em; }
+
+    /* ── Inline "report a problem" form ── */
+    .report-form { display: none; margin-top: 0.9rem; border-top: 1px dashed var(--border); padding-top: 0.9rem; }
+    .report-form.open { display: block; }
+    .report-form label { font-size: 0.76rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 0.35rem; }
+    .report-form textarea {
+      width: 100%; padding: 0.65rem 0.8rem; border-radius: 10px; border: 1.5px solid var(--border);
+      font-family: 'Montserrat', sans-serif; font-size: 0.87rem; color: var(--forest); background: var(--off-white);
+      resize: vertical; min-height: 70px;
+    }
+    .report-form textarea:focus { outline: none; border-color: var(--forest); }
+    .report-form input[type="file"] { margin-top: 0.6rem; font-size: 0.8rem; }
+    .report-form-actions { display: flex; gap: 0.6rem; margin-top: 0.8rem; }
+    .report-error { background: #fff0f0; border: 1.5px solid rgba(220,53,69,0.25); color: #c0392b; font-size: 0.8rem; font-weight: 600; padding: 0.6rem 0.8rem; border-radius: 8px; margin-top: 0.7rem; display: none; }
+
+    /* ── Reporter's own dispute comment ── */
+    .comment-box { background: #fff8e8; border: 1.5px solid #f0dfa8; border-radius: 10px; padding: 0.75rem 0.95rem; margin-top: 0.8rem; }
+    .comment-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #a06600; margin-bottom: 0.3rem; }
+    .comment-text { font-size: 0.87rem; color: var(--forest); line-height: 1.5; white-space: pre-wrap; }
+    .comment-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.4rem; }
+    .dispute-pending-note { font-size: 0.78rem; color: var(--muted); margin-top: 0.6rem; font-style: italic; }
+
+    /* ── Rate & Review (Myntra-style: borrower rates lender after return) ── */
+    .review-form { display: none; margin-top: 0.9rem; border-top: 1px dashed var(--border); padding-top: 0.9rem; }
+    .review-form.open { display: block; }
+    .review-form label { font-size: 0.76rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 0.5rem; }
+    .star-picker { display: flex; gap: 0.25rem; margin-bottom: 0.75rem; font-size: 1.7rem; line-height: 1; }
+    .star-picker .star { color: var(--border); cursor: pointer; transition: color 0.15s, transform 0.1s; user-select: none; }
+    .star-picker .star:hover { transform: scale(1.12); }
+    .star-picker .star.filled { color: #f0a500; }
+    .review-form textarea {
+      width: 100%; padding: 0.65rem 0.8rem; border-radius: 10px; border: 1.5px solid var(--border);
+      font-family: 'Montserrat', sans-serif; font-size: 0.87rem; color: var(--forest); background: var(--off-white);
+      resize: vertical; min-height: 60px;
+    }
+    .review-form textarea:focus { outline: none; border-color: var(--forest); }
+    .review-error { background: #fff0f0; border: 1.5px solid rgba(220,53,69,0.25); color: #c0392b; font-size: 0.8rem; font-weight: 600; padding: 0.6rem 0.8rem; border-radius: 8px; margin-top: 0.7rem; display: none; }
+    .review-box { background: #fff8e8; border: 1.5px solid #f0dfa8; border-radius: 10px; padding: 0.75rem 0.95rem; margin-top: 0.8rem; }
+    .review-box-stars { color: #f0a500; font-size: 1.15rem; letter-spacing: 0.12rem; }
+    .review-box-text { font-size: 0.87rem; color: var(--forest); line-height: 1.5; margin-top: 0.35rem; white-space: pre-wrap; }
+
+    #toast { display: none; position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--forest); color: var(--white); padding: 1rem 1.75rem; border-radius: 14px; font-size: 0.88rem; font-weight: 600; box-shadow: 0 8px 32px rgba(25,63,52,0.35); z-index: 9999; text-align: center; max-width: 400px; width: calc(100% - 2rem); line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/index.html" class="nav-brand">ShareSphere</a>
+    <a href="/index.html" class="nav-back">← Back to listings</a>
+  </nav>
+
+  <div class="wrap">
+    <h1>My Bookings</h1>
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-borrower" onclick="switchTab('borrower')">As Borrower</button>
+      <button class="tab-btn" id="tab-lender" onclick="switchTab('lender')">As Lender</button>
+    </div>
+
+    <div id="empty-state">No bookings yet.</div>
+    <div id="booking-list"></div>
+  </div>
+
+  <div style="max-width:900px; margin:0 auto; padding:0 1.5rem 3rem; font-size:0.78rem; color:var(--muted); line-height:1.6;">
+    <strong>About payments in this prototype:</strong> Borrower payments and deposit refunds are processed through real Razorpay test-mode transactions (verifiable via payment IDs shown above in each booking's timeline). Payouts to lenders are simulated, since enabling real bank transfers via Razorpay Route requires registered-business KYC not available for a student project. In production, this step would use Razorpay Route or an equivalent marketplace split-payment API.
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    const BASE = 'http://localhost:5000';
+    let currentTab = 'borrower';
+    let currentEmail = null;
+
+    // Selected-but-not-yet-submitted star rating per booking, keyed by booking id.
+    // Cleared once a review is submitted (the booking then shows the read-only review-box instead).
+    let reviewRatings = {};
+
+    function formatPrice(p) { return '₹' + Number(p).toLocaleString('en-IN'); }
+    function formatDate(d) { return d ? new Date(d).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '—'; }
+    function formatDateTime(d) { return d ? new Date(d).toLocaleString('en-IN', { dateStyle:'medium', timeStyle:'short' }) : '—'; }
+
+    function showToast(msg, duration = 5000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, duration);
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.getElementById('tab-borrower').classList.toggle('active', tab === 'borrower');
+      document.getElementById('tab-lender').classList.toggle('active', tab === 'lender');
+      loadBookings();
+    }
+
+    async function loadBookings() {
+      const listEl = document.getElementById('booking-list');
+      const emptyEl = document.getElementById('empty-state');
+      listEl.innerHTML = '';
+      emptyEl.style.display = 'none';
+
+      if (!currentEmail) { emptyEl.textContent = 'Please log in to view your bookings.'; emptyEl.style.display = 'block'; return; }
+
+      try {
+        const res = await fetch(`${BASE}/api/bookings/${currentTab}/${encodeURIComponent(currentEmail)}`);
+        const bookings = await res.json();
+
+        if (!Array.isArray(bookings) || !bookings.length) {
+          emptyEl.textContent = 'No bookings yet.';
+          emptyEl.style.display = 'block';
+          return;
+        }
+
+        bookings.forEach(b => {
+          listEl.appendChild(renderBookingCard(b));
+          // Check for an existing dispute on this booking (own comment, or hide the report button)
+          loadDisputeState(b.id);
+          // Rate & Review is borrower-only, and only meaningful once the booking is COMPLETED
+          if (currentTab === 'borrower' && b.payment_status === 'COMPLETED') {
+            loadReviewState(b.id);
+          }
+        });
+      } catch (err) {
+        console.error(err);
+        emptyEl.textContent = 'Could not load bookings. Please try again.';
+        emptyEl.style.display = 'block';
+      }
+    }
+
+    function renderBookingCard(b) {
+      const card = document.createElement('div');
+      card.className = 'booking-card';
+      card.setAttribute('data-booking-id', b.id);
+
+      const thumb = (b.image_paths && b.image_paths[0]) ? `${BASE}/${b.image_paths[0]}` : '';
+
+      let actionsHtml = '';
+      if (currentTab === 'lender') {
+        if (b.payment_status === 'HELD_IN_ESCROW') {
+          actionsHtml = `<button class="btn btn-primary" onclick="pickPhotoAndConfirm('pickup', ${b.id}, this)">Confirm Pickup</button>`;
+        } else if (b.payment_status === 'RENT_RELEASED' && b.booking_status !== 'DISPUTED') {
+          actionsHtml = `<button class="btn btn-primary" onclick="pickPhotoAndConfirm('return', ${b.id}, this)">Confirm Return</button>`;
+        }
+      }
+      if (currentTab === 'borrower' && ['HELD_IN_ESCROW','RENT_RELEASED','COMPLETED'].includes(b.payment_status)) {
+        actionsHtml += `<button class="btn btn-outline" onclick="togglePickupDetails(${b.id}, this)">View Pickup Details</button>`;
+      }
+      // Lender-side mirror: once the borrower has actually paid (escrow held
+      // or beyond), the lender can see who they're dealing with — full
+      // contact details, not just the email shown on the card.
+      if (currentTab === 'lender' && ['HELD_IN_ESCROW','RENT_RELEASED','COMPLETED'].includes(b.payment_status)) {
+        actionsHtml += `<button class="btn btn-outline" onclick="toggleBorrowerDetails(${b.id}, this)">View Borrower Details</button>`;
+      }
+
+      // "Report a Problem" trigger — only shown once we've confirmed (via loadDisputeState)
+      // that this booking has no dispute on it yet. Starts hidden; class added below if eligible.
+      if (['RENT_RELEASED', 'COMPLETED'].includes(b.payment_status)) {
+        actionsHtml += `<button class="btn btn-danger-outline report-trigger" id="report-trigger-${b.id}" style="display:none;" onclick="toggleReportForm(${b.id})">Report a Problem</button>`;
+      }
+
+      // "Rate & Review" trigger — borrower only, only once the item is confirmed returned.
+      // Starts hidden; loadReviewState() reveals it only if this borrower hasn't already
+      // reviewed this booking (otherwise the read-only review-box is shown instead).
+      if (currentTab === 'borrower' && b.payment_status === 'COMPLETED') {
+        actionsHtml += `<button class="btn btn-outline review-trigger" id="review-trigger-${b.id}" style="display:none;" onclick="toggleReviewForm(${b.id})">★ Rate &amp; Review</button>`;
+      }
+
+      actionsHtml += `<button class="btn btn-outline" onclick="toggleTimeline(${b.id}, this)">View Timeline</button>`;
+
+      card.innerHTML = `
+        <div class="bc-top">
+          ${thumb ? `<img class="bc-thumb" src="${thumb}" onerror="this.style.display='none'">` : ''}
+          <div class="bc-info">
+            <div class="bc-title">${b.title || 'Item'}</div>
+            <div class="bc-meta">${formatDate(b.start_date)} → ${formatDate(b.end_date)} · ${b.total_days} day(s)</div>
+            <div class="bc-meta">${currentTab === 'lender' ? 'Borrower: ' + b.borrower_email : 'Lender: ' + b.lender_email}</div>
+            <span class="status-badge status-${b.payment_status}">${b.payment_status.replace(/_/g,' ')}</span>
+          </div>
+          <div class="bc-amount">${formatPrice(b.total_payable)}</div>
+        </div>
+        <div class="bc-actions">${actionsHtml}</div>
+        <div class="report-form" id="report-form-${b.id}">
+          <label>What went wrong?</label>
+          <textarea id="report-reason-${b.id}" placeholder="e.g. item arrived damaged, borrower returned it broken..."></textarea>
+          <input type="file" id="report-evidence-${b.id}" accept="image/*">
+          <div class="report-form-actions">
+            <button class="btn btn-primary" id="report-submit-${b.id}" onclick="submitDispute(${b.id}, '${currentTab}')">Submit Report</button>
+            <button class="btn btn-outline" onclick="toggleReportForm(${b.id})">Cancel</button>
+          </div>
+          <div class="report-error" id="report-error-${b.id}"></div>
+        </div>
+        <div class="dispute-status-slot" id="dispute-slot-${b.id}"></div>
+        ${currentTab === 'borrower' && b.payment_status === 'COMPLETED' ? `
+        <div class="review-form" id="review-form-${b.id}">
+          <label>Rate &amp; review the lender</label>
+          <div class="star-picker" id="star-picker-${b.id}">
+            ${[1,2,3,4,5].map(n => `<span class="star" data-value="${n}" onclick="setReviewRating(${b.id}, ${n})">★</span>`).join('')}
+          </div>
+          <textarea id="review-comment-${b.id}" placeholder="How was your experience with this lender? (optional)"></textarea>
+          <div class="report-form-actions">
+            <button class="btn btn-primary" id="review-submit-${b.id}" onclick="submitReview(${b.id})">Submit Review</button>
+            <button class="btn btn-outline" onclick="toggleReviewForm(${b.id})">Cancel</button>
+          </div>
+          <div class="review-error" id="review-error-${b.id}"></div>
+        </div>
+        <div class="review-status-slot" id="review-slot-${b.id}"></div>
+        ` : ''}
+        <div class="pickup-details" id="pickup-${b.id}"></div>
+        <div class="pickup-details" id="borrower-details-${b.id}"></div>
+        <div class="timeline" id="timeline-${b.id}"></div>
+      `;
+
+      // Borrower: show their OTP for the current stage
+      if (currentTab === 'borrower') {
+        let otpHtml = '';
+        if (b.payment_status === 'HELD_IN_ESCROW' && b.pickup_otp) {
+          otpHtml = `<div class="bc-otp">🔑 Your pickup code: <strong>${b.pickup_otp}</strong> — share only when you receive the item</div>`;
+        } else if (b.payment_status === 'RENT_RELEASED' && b.return_otp && b.booking_status !== 'DISPUTED') {
+          otpHtml = `<div class="bc-otp">🔑 Your return code: <strong>${b.return_otp}</strong> — share only when you return the item</div>`;
+        }
+        if (otpHtml) card.querySelector('.bc-actions').insertAdjacentHTML('beforebegin', otpHtml);
+      }
+
+      return card;
+    }
+
+    // Toggles the inline report form open/closed (replaces the old prompt()-based flow)
+    function toggleReportForm(bookingId) {
+      const form = document.getElementById(`report-form-${bookingId}`);
+      form.classList.toggle('open');
+      if (form.classList.contains('open')) {
+        document.getElementById(`report-reason-${bookingId}`).focus();
+      }
+    }
+
+    // ── Checks whether a dispute already exists on this booking, and renders accordingly ──
+    async function loadDisputeState(bookingId) {
+      const card = document.querySelector(`.booking-card[data-booking-id="${bookingId}"]`);
+      if (!card) return;
+      const triggerBtn = document.getElementById(`report-trigger-${bookingId}`);
+      const slot = document.getElementById(`dispute-slot-${bookingId}`);
+
+      try {
+        const res = await fetch(`${BASE}/api/disputes/booking/${bookingId}`);
+        const data = await res.json();
+
+        if (!data.success) {
+          console.error('loadDisputeState: server returned success:false', data);
+          return;
+        }
+
+        if (!data.dispute) {
+          // No dispute yet on this booking — safe to show the report trigger
+          if (triggerBtn) triggerBtn.style.display = '';
+          return;
+        }
+
+        // A dispute exists on this booking — never show the trigger again for either party
+        if (triggerBtn) triggerBtn.style.display = 'none';
+
+        const d = data.dispute;
+        if (d.raised_by === currentEmail) {
+          // This is the person who wrote it — show their own comment
+          slot.innerHTML = `
+            <div class="comment-box">
+              <div class="comment-label">💬 Your report</div>
+              <div class="comment-text">${escapeHtml(d.reason)}</div>
+              <div class="comment-meta">
+                ${formatDateTime(d.created_at)} ·
+                ${d.status === 'resolved'
+                  ? `Resolved — ₹${d.deduction_amount} deducted${d.resolution_note ? ': ' + escapeHtml(d.resolution_note) : ''}`
+                  : 'Awaiting admin review'}
+              </div>
+            </div>
+          `;
+        } else {
+          // The other party raised it — don't reveal their comment, just note that one exists
+          slot.innerHTML = `<div class="dispute-pending-note">A dispute has been raised on this booking and is ${d.status === 'resolved' ? 'resolved' : 'awaiting admin review'}.</div>`;
+        }
+      } catch (err) {
+        console.error('loadDisputeState fetch failed:', err);
+      }
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    async function submitDispute(bookingId, role) {
+      const reasonEl = document.getElementById(`report-reason-${bookingId}`);
+      const fileEl = document.getElementById(`report-evidence-${bookingId}`);
+      const errEl = document.getElementById(`report-error-${bookingId}`);
+      const submitBtn = document.getElementById(`report-submit-${bookingId}`);
+
+      const reason = reasonEl.value.trim();
+      errEl.style.display = 'none';
+
+      if (!reason) {
+        errEl.textContent = 'Please describe the problem before submitting.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        const formData = new FormData();
+        formData.append('raised_by', currentEmail);
+        formData.append('raised_by_role', role === 'borrower' ? 'borrower' : 'lender');
+        formData.append('reason', reason);
+        if (fileEl.files[0]) formData.append('evidence', fileEl.files[0]);
+
+        const res = await fetch(`${BASE}/api/disputes/${bookingId}/raise`, {
+          method: 'POST',
+          body: formData
+        });
+
+        let data;
+        try {
+          data = await res.json();
+        } catch (parseErr) {
+          throw new Error(`Server returned a non-JSON response (HTTP ${res.status}). Check your server console for the actual error.`);
+        }
+
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || `Request failed with HTTP ${res.status}`);
+        }
+
+        // Success — close the form and show the comment immediately, no full reload needed
+        document.getElementById(`report-form-${bookingId}`).classList.remove('open');
+        showToast('✅ Dispute submitted. Our team will review it.');
+        loadDisputeState(bookingId);
+
+      } catch (err) {
+        console.error('submitDispute failed:', err);
+        errEl.textContent = '⚠️ ' + err.message;
+        errEl.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Report';
+      }
+    }
+
+    // ── Rate & Review (borrower → lender, one review per booking, only after COMPLETED) ──
+
+    // Toggles the inline review form open/closed
+    function toggleReviewForm(bookingId) {
+      const form = document.getElementById(`review-form-${bookingId}`);
+      if (!form) return;
+      form.classList.toggle('open');
+    }
+
+    // Star picker: highlights stars 1..value as filled, stores the pending rating
+    function setReviewRating(bookingId, value) {
+      reviewRatings[bookingId] = value;
+      const stars = document.querySelectorAll(`#star-picker-${bookingId} .star`);
+      stars.forEach(s => {
+        s.classList.toggle('filled', Number(s.dataset.value) <= value);
+      });
+    }
+
+    // Checks whether this borrower already reviewed this booking, and renders accordingly
+    async function loadReviewState(bookingId) {
+      const triggerBtn = document.getElementById(`review-trigger-${bookingId}`);
+      try {
+        const res = await fetch(`${BASE}/api/reviews/booking/${bookingId}`);
+        const data = await res.json();
+        if (!data.success) return;
+
+        if (data.review) {
+          // Already reviewed — hide the trigger, show the read-only review
+          if (triggerBtn) triggerBtn.style.display = 'none';
+          renderSubmittedReview(bookingId, data.review.rating, data.review.comment, data.review.created_at);
+        } else {
+          // Not reviewed yet — safe to show the trigger
+          if (triggerBtn) triggerBtn.style.display = '';
+        }
+      } catch (err) {
+        console.error('loadReviewState fetch failed:', err);
+      }
+    }
+
+    function renderSubmittedReview(bookingId, rating, comment, createdAt) {
+      const slot = document.getElementById(`review-slot-${bookingId}`);
+      if (!slot) return;
+      const starsHtml = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+      slot.innerHTML = `
+        <div class="review-box">
+          <div class="review-box-stars">${starsHtml}</div>
+          ${comment ? `<div class="review-box-text">${escapeHtml(comment)}</div>` : ''}
+          <div class="comment-meta">Reviewed ${formatDateTime(createdAt)}</div>
+        </div>
+      `;
+    }
+
+    async function submitReview(bookingId) {
+      const rating = reviewRatings[bookingId];
+      const errEl = document.getElementById(`review-error-${bookingId}`);
+      const submitBtn = document.getElementById(`review-submit-${bookingId}`);
+      errEl.style.display = 'none';
+
+      if (!rating) {
+        errEl.textContent = 'Please select a star rating before submitting.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      const comment = document.getElementById(`review-comment-${bookingId}`).value.trim();
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        const res = await fetch(`${BASE}/api/reviews`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ booking_id: bookingId, reviewer_email: currentEmail, rating, comment })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'Could not submit review.');
+
+        document.getElementById(`review-form-${bookingId}`).classList.remove('open');
+        document.getElementById(`review-trigger-${bookingId}`).style.display = 'none';
+        renderSubmittedReview(bookingId, rating, comment, new Date().toISOString());
+        showToast('✅ Thanks — your review was submitted.');
+
+      } catch (err) {
+        console.error('submitReview failed:', err);
+        errEl.textContent = '⚠️ ' + err.message;
+        errEl.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Review';
+      }
+    }
+
+    const EVENT_CONFIG = {
+      payment_held:     { icon: '🔒', label: (amt) => `${formatPrice(amt)} charged and held in escrow` },
+      pickup_confirmed: { icon: '📦', label: () => 'Pickup confirmed by lender' },
+      rent_released:    { icon: '💸', label: (amt, to) => `${formatPrice(amt)} rent released to ${to} (simulated payout)` },
+      deposit_refunded: { icon: '↩️', label: (amt, to) => `${formatPrice(amt)} deposit refunded to ${to}` },
+      dispute_raised:   { icon: '⚠️', label: () => 'A dispute was raised on this booking' },
+      dispute_resolved: { icon: '✅', label: () => 'Dispute resolved by admin' },
+    };
+
+    async function toggleTimeline(bookingId, btn) {
+      const el = document.getElementById(`timeline-${bookingId}`);
+      const isOpen = el.classList.contains('open');
+      if (isOpen) { el.classList.remove('open'); btn.textContent = 'View Timeline'; return; }
+
+      btn.textContent = 'Loading...';
+      try {
+        const res = await fetch(`${BASE}/api/bookings/${bookingId}/ledger`);
+        const data = await res.json();
+        if (!data.success) throw new Error();
+
+        if (!data.entries.length) {
+          el.innerHTML = `<div class="tl-meta">No escrow activity yet.</div>`;
+        } else {
+          let html = data.entries.map(entry => {
+            const cfg = EVENT_CONFIG[entry.event_type] || { icon: '•', label: () => entry.note || entry.event_type };
+            return `
+              <div class="tl-item">
+                <div class="tl-icon">${cfg.icon}</div>
+                <div class="tl-body">
+                  <div class="tl-title">${cfg.label(entry.amount, entry.to_party)}</div>
+                  <div class="tl-meta">${formatDateTime(entry.created_at)}</div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          if (data.razorpay_payment_id) {
+            html += `
+              <div style="background:var(--mint-soft); border-radius:10px; padding:0.7rem 0.9rem; margin-top:0.8rem; font-size:0.78rem; font-family:monospace; color:var(--forest);">
+                Razorpay Payment ID: ${data.razorpay_payment_id}<br>
+                <span style="opacity:0.7; font-family:'Montserrat', sans-serif;">Verifiable in Razorpay Dashboard → Payments (test mode)</span>
+              </div>
+            `;
+          }
+
+          if (data.pickup_photo || data.return_photo) {
+            html += `<div style="display:flex; gap:0.8rem; margin-top:1rem; flex-wrap:wrap;">`;
+            if (data.pickup_photo) {
+              html += `
+                <div>
+                  <div class="tl-meta" style="margin-bottom:0.3rem; font-weight:600;">📦 Pickup condition</div>
+                  <img src="${BASE}/uploads/${encodeURIComponent(data.pickup_photo)}" style="width:140px; height:140px; object-fit:cover; border-radius:10px; border:1.5px solid var(--border); cursor:pointer;" onclick="window.open(this.src)">
+                </div>
+              `;
+            }
+            if (data.return_photo) {
+              html += `
+                <div>
+                  <div class="tl-meta" style="margin-bottom:0.3rem; font-weight:600;">↩️ Return condition</div>
+                  <img src="${BASE}/uploads/${encodeURIComponent(data.return_photo)}" style="width:140px; height:140px; object-fit:cover; border-radius:10px; border:1.5px solid var(--border); cursor:pointer;" onclick="window.open(this.src)">
+                </div>
+              `;
+            }
+            html += `</div>`;
+          }
+
+          el.innerHTML = html;
+        }
+        el.classList.add('open');
+        btn.textContent = 'Hide Timeline';
+      } catch (err) {
+        console.error(err);
+        showToast('⚠️ Could not load timeline.');
+        btn.textContent = 'View Timeline';
+      }
+    }
+
+    async function togglePickupDetails(bookingId, btn) {
+      const el = document.getElementById(`pickup-${bookingId}`);
+      const isOpen = el.classList.contains('open');
+      if (isOpen) { el.classList.remove('open'); el.innerHTML = ''; btn.textContent = 'View Pickup Details'; return; }
+
+      btn.textContent = 'Loading...';
+      try {
+        const res = await fetch(`${BASE}/api/bookings/${bookingId}/pickup-details`);
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+
+        el.innerHTML = `
+          <div class="tl-item">
+            <div class="tl-icon">📍</div>
+            <div class="tl-body">
+              <div class="tl-title">${data.lender_name}${data.lender_phone ? ' · ' + data.lender_phone : ''}</div>
+              <div class="tl-meta">
+                ${data.lender_address ? data.lender_address + ', ' : ''}${data.lender_district || ''}${data.lender_state ? ', ' + data.lender_state : ''}${data.lender_pincode ? ' - ' + data.lender_pincode : ''}
+              </div>
+              <div class="tl-meta">Pickup time: ${data.pickup_time || 'Not specified'}</div>
+            </div>
+          </div>
+        `;
+        el.classList.add('open');
+        btn.textContent = 'Hide Pickup Details';
+      } catch (err) {
+        console.error(err);
+        showToast('⚠️ ' + (err.message || 'Could not load pickup details.'));
+        btn.textContent = 'View Pickup Details';
+      }
+    }
+
+    // Lender-side mirror of togglePickupDetails: shows the borrower's name,
+    // phone, address and email once payment has actually been made, so the
+    // lender knows exactly who they're handing the item to.
+    async function toggleBorrowerDetails(bookingId, btn) {
+      const el = document.getElementById(`borrower-details-${bookingId}`);
+      const isOpen = el.classList.contains('open');
+      if (isOpen) { el.classList.remove('open'); el.innerHTML = ''; btn.textContent = 'View Borrower Details'; return; }
+
+      btn.textContent = 'Loading...';
+      try {
+        const res = await fetch(`${BASE}/api/bookings/${bookingId}/borrower-details`);
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+
+        el.innerHTML = `
+          <div class="tl-item">
+            <div class="tl-icon">👤</div>
+            <div class="tl-body">
+              <div class="tl-title">${data.borrower_name}${data.borrower_phone ? ' · ' + data.borrower_phone : ''}</div>
+              <div class="tl-meta">${data.borrower_email || ''}</div>
+              <div class="tl-meta">
+                ${data.borrower_address ? data.borrower_address + ', ' : ''}${data.borrower_district || ''}${data.borrower_state ? ', ' + data.borrower_state : ''}${data.borrower_pincode ? ' - ' + data.borrower_pincode : ''}
+              </div>
+            </div>
+          </div>
+        `;
+        el.classList.add('open');
+        btn.textContent = 'Hide Borrower Details';
+      } catch (err) {
+        console.error(err);
+        showToast('⚠️ ' + (err.message || 'Could not load borrower details.'));
+        btn.textContent = 'View Borrower Details';
+      }
+    }
+
+    function pickPhotoAndConfirm(kind, bookingId, btn) {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = () => {
+        if (!input.files.length) return;
+        if (kind === 'pickup') doConfirmPickup(bookingId, btn, input.files[0]);
+        else doConfirmReturn(bookingId, btn, input.files[0]);
+      };
+      input.click();
+    }
+
+    async function doConfirmPickup(bookingId, btn, photoFile) {
+      const otp = prompt('Ask the borrower for their pickup code and enter it here:');
+      if (!otp) return;
+
+      btn.disabled = true; btn.textContent = 'Confirming...';
+      try {
+        const formData = new FormData();
+        formData.append('otp', otp);
+        formData.append('photo', photoFile);
+
+        const res = await fetch(`${BASE}/api/bookings/${bookingId}/confirm-pickup`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('✅ Pickup confirmed. Rent released to you.');
+          loadBookings();
+        } else {
+          showToast('⚠️ ' + (data.message || 'Could not confirm pickup.'));
+          btn.disabled = false; btn.textContent = 'Confirm Pickup';
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('⚠️ Something went wrong.');
+        btn.disabled = false; btn.textContent = 'Confirm Pickup';
+      }
+    }
+
+    async function doConfirmReturn(bookingId, btn, photoFile) {
+      const otp = prompt('Ask the borrower for their return code and enter it here:');
+      if (!otp) return;
+
+      btn.disabled = true; btn.textContent = 'Confirming...';
+      try {
+        const formData = new FormData();
+        formData.append('otp', otp);
+        formData.append('photo', photoFile);
+
+        const res = await fetch(`${BASE}/api/bookings/${bookingId}/confirm-return`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast('✅ Return confirmed. Deposit refunded to borrower.');
+          loadBookings();
+        } else {
+          showToast('⚠️ ' + (data.message || 'Could not confirm return.'));
+          btn.disabled = false; btn.textContent = 'Confirm Return';
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('⚠️ Something went wrong.');
+        btn.disabled = false; btn.textContent = 'Confirm Return';
+      }
+    }
+
+    // ── Init ──
+    currentEmail = localStorage.getItem('loggedInUser');
+    loadBookings();
+  </script>
+</body>
+</html>

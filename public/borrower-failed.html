@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verification Failed</title>
+    <link rel="icon" href="css/assets/logo1.png">
+    <style>
+        body{font-family:Arial;text-align:center;padding-top:100px;background:#fff0f0;}
+        h1{color:red;}
+        button{padding:10px 20px;font-size:16px;border-radius:8px;border:none;background-color:#193f34;color:white;cursor:pointer;}
+        button:hover{background-color:#193f34;}
+    </style>
+</head>
+<body>
+    <h1>Verification Failed</h1>
+    <p>Sorry, your application was rejected. Please fill the form again with correct details.</p>
+    <button onclick="reapply()">Fill Form Again</button>
+    <button onclick="goHome()" style="background-color:#193f34;margin-left:10px;">Go Back Home</button>
+
+    <script>
+        function reapply(){
+            window.location.href = "borrower-form.html?reapply=true";
+        }
+
+        function goHome(){
+            window.location.href = "index.html";
+        }
+
+        // Prevent back button from landing on waiting page
+        window.addEventListener("pageshow", function(e) {
+            if(e.persisted) {
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -60,7 +60,7 @@
 
         <div class="form-row">
             <label>Pincode <span style="color:red">*</span></label>
-            <input type="text" id="pincode" required maxlength="6" pattern="[0-9]{6}" placeholder="Enter 6-digit pincode">
+            <input type="text" id="pincode" required maxlength="6" pattern="[0-9]{6}" inputmode="numeric" placeholder="Enter 6-digit pincode">
         </div>
 
         <div class="form-row">
@@ -81,6 +81,32 @@
         <div class="form-row">
             <label>Upload Self Photo <span style="color:red">*</span></label>
             <input type="file" id="selfPhoto" required>
+        </div>
+
+        <hr style="margin:1.5rem 0; border:none; border-top:1px solid #ddd;">
+        <h3 style="margin-bottom:0.5rem; color:#193f34;">Payout Details</h3>
+        <p style="font-size:0.85rem; color:#666; margin-bottom:1rem;">
+            This is where your rent earnings will be sent once a booking's pickup is confirmed.
+        </p>
+
+        <div class="form-row">
+            <label>Account Holder Name <span style="color:red">*</span></label>
+            <input type="text" id="accountHolderName" required>
+        </div>
+
+        <div class="form-row">
+            <label>Bank Account Number <span style="color:red">*</span></label>
+            <input type="text" id="bankAccountNumber" required minlength="9" maxlength="18" inputmode="numeric" placeholder="Enter account number (digits only)">
+        </div>
+
+        <div class="form-row">
+            <label>IFSC Code <span style="color:red">*</span></label>
+            <input type="text" id="bankIfsc" required placeholder="e.g. HDFC0001234">
+        </div>
+
+        <div class="form-row">
+            <label>UPI ID <span style="color:#888;">(optional)</span></label>
+            <input type="text" id="upiId" placeholder="e.g. name@okhdfcbank">
         </div>
 
         <div class="checkbox">
@@ -162,9 +188,20 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("phone").addEventListener("input", function(){
         this.value = this.value.replace(/[^0-9]/g,'');
     });
-});
 
-// Form submit
+    // FIX: pattern="[0-9]{6}" only validates at submit time — it doesn't
+    // stop letters/symbols from being typed. Strip anything non-numeric as
+    // the user types, same approach as the phone field above.
+    document.getElementById("pincode").addEventListener("input", function(){
+        this.value = this.value.replace(/[^0-9]/g,'');
+    });
+    // FIX: same treatment as pincode/phone — pattern/maxlength alone don't
+    // stop non-numeric characters (or spaces) from being typed. Strip
+    // anything that isn't a digit as the user types.
+    document.getElementById("bankAccountNumber").addEventListener("input", function(){
+        this.value = this.value.replace(/[^0-9]/g,'');
+    });
+});
 document.getElementById("lenderForm").addEventListener("submit", async function(e){
     e.preventDefault();
 
@@ -174,8 +211,28 @@ document.getElementById("lenderForm").addEventListener("submit", async function(
         return;
     }
 
+    const accHolder = document.getElementById("accountHolderName").value.trim();
+    const accNum    = document.getElementById("bankAccountNumber").value.trim();
+    const ifsc      = document.getElementById("bankIfsc").value.trim();
+
+    if (!accHolder || !accNum || !ifsc) {
+        alert("Please provide your account holder name, bank account number, and IFSC code.");
+        return;
+    }
+
+    // FIX: minlength/maxlength on the input aren't enforced automatically
+    // since the form's default submit validation is bypassed above
+    // (e.preventDefault() + manual checks). Real Indian bank account
+    // numbers run roughly 9–18 digits depending on the bank, so check that
+    // range explicitly rather than requiring one fixed length.
+    if (accNum.length < 9 || accNum.length > 18) {
+        alert("Bank account number should be between 9 and 18 digits.");
+        return;
+    }
+
     const formData = new FormData();
-    ["firstName","lastName","dob","email","phone","address","state","district","pincode","idType"].forEach(id => {
+    ["firstName","lastName","dob","email","phone","address","state","district","pincode","idType",
+     "accountHolderName","bankAccountNumber","bankIfsc","upiId"].forEach(id => {
         formData.append(id, document.getElementById(id).value);
     });
     formData.append("idDocument", document.getElementById("idDocument").files[0]);
