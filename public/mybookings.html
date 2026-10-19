@@ -285,9 +285,9 @@
       if (currentTab === 'borrower') {
         let otpHtml = '';
         if (b.payment_status === 'HELD_IN_ESCROW' && b.pickup_otp) {
-          otpHtml = `<div class="bc-otp">🔑 Your pickup code: <strong>${b.pickup_otp}</strong> — share only when you receive the item</div>`;
+          otpHtml = `<div class="bc-otp">Your pickup code: <strong>${b.pickup_otp}</strong> - share only when you receive the item</div>`;
         } else if (b.payment_status === 'RENT_RELEASED' && b.return_otp && b.booking_status !== 'DISPUTED') {
-          otpHtml = `<div class="bc-otp">🔑 Your return code: <strong>${b.return_otp}</strong> — share only when you return the item</div>`;
+          otpHtml = `<div class="bc-otp">Your return code: <strong>${b.return_otp}</strong> - share only when you return the item</div>`;
         }
         if (otpHtml) card.querySelector('.bc-actions').insertAdjacentHTML('beforebegin', otpHtml);
       }
