@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Terms & Conditions – ShareSphere</title>
   <link rel="icon" href="css/assets/logo1.png"/>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -69,7 +69,7 @@
       padding: 0.3rem 1rem; border-radius: 999px;
     }
     .hero-title {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Montserrat', sans-serif;
       font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 700; color: var(--white);
       line-height: 1.15; margin-bottom: 1rem;
@@ -131,11 +131,14 @@
       animation: fadeUp 0.5s ease both;
     }
     .tc-section:first-child { padding-top: 0; }
-    .tc-section:last-child { border-bottom: none; }
+    .tc-section:last-of-type { border-bottom: none; }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tc-section { animation: none; }
     }
 
     .section-number {
@@ -145,8 +148,8 @@
       margin-bottom: 0.4rem;
     }
     .section-heading {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.25rem; font-weight: 600;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.2rem; font-weight: 700;
       color: var(--forest); margin-bottom: 1rem;
       line-height: 1.3;
     }
@@ -194,8 +197,8 @@
       box-shadow: 0 8px 32px rgba(25,63,52,0.2);
     }
     .agreement-banner h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem; color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.2rem; font-weight: 700; color: var(--white);
       margin-bottom: 0.6rem;
     }
     .agreement-banner p {
@@ -228,7 +231,7 @@
   <div class="hero-eyebrow">Legal</div>
   <h1 class="hero-title">Terms &amp; Conditions</h1>
   <p class="hero-sub">Please read these terms carefully before listing or renting any item on ShareSphere.</p>
-  <div class="hero-date">Effective Date: 1st June 2025 &nbsp;·&nbsp; Last Updated: May 2026</div>
+  <div class="hero-date">Effective Date: 1st June 2025 &nbsp;·&nbsp; Last Updated: October 2026</div>
 </div>
 
 <div class="page-wrap">
@@ -240,13 +243,18 @@
       <li><a href="#s2">2. Eligibility</a></li>
       <li><a href="#s3">3. Lender Obligations</a></li>
       <li><a href="#s4">4. Borrower Obligations</a></li>
-      <li><a href="#s5">5. Communication &amp; Contact</a></li>
-      <li><a href="#s6">6. Prohibited Items</a></li>
-      <li><a href="#s7">7. Account Suspension</a></li>
-      <li><a href="#s8">8. Limitation of Liability</a></li>
-      <li><a href="#s9">9. Privacy</a></li>
-      <li><a href="#s10">10. Changes to Terms</a></li>
-      <li><a href="#s11">11. Contact Us</a></li>
+      <li><a href="#s5">5. Booking &amp; Payments</a></li>
+      <li><a href="#s6">6. Pickup &amp; Return</a></li>
+      <li><a href="#s7">7. Cancellations &amp; Refunds</a></li>
+      <li><a href="#s8">8. Disputes</a></li>
+      <li><a href="#s9">9. Communication &amp; Contact</a></li>
+      <li><a href="#s10">10. Reviews &amp; Ratings</a></li>
+      <li><a href="#s11">11. Prohibited Items</a></li>
+      <li><a href="#s12">12. Account Suspension</a></li>
+      <li><a href="#s13">13. Limitation of Liability</a></li>
+      <li><a href="#s14">14. Privacy</a></li>
+      <li><a href="#s15">15. Changes to Terms</a></li>
+      <li><a href="#s16">16. Contact Us</a></li>
     </ul>
   </aside>
 
@@ -256,9 +264,12 @@
       <div class="section-number">Section 01</div>
       <h2 class="section-heading">About ShareSphere</h2>
       <div class="section-body">
-        <p>ShareSphere is a peer-to-peer item rental discovery platform that connects lenders (item owners) with borrowers (renters) across India. ShareSphere acts solely as a directory and communication bridge — we do not own, inspect, take physical possession of, or handle payments for any listed item.</p>
-        <p>All rental agreements, payments, and transactions are conducted directly between lenders and borrowers. ShareSphere is not a party to any such arrangement.</p>
+        <p>ShareSphere is a peer-to-peer item rental platform that connects lenders (item owners) with borrowers (renters) across India. ShareSphere verifies the identity of lenders and borrowers, handles booking and payment through a secure escrow process, confirms handover and return with one-time codes and photographs, and provides a dispute resolution service.</p>
+        <p>The rental itself is an agreement between the lender and the borrower. ShareSphere does not own, inspect, or take physical possession of any listed item.</p>
         <p>By registering on ShareSphere — whether as a lender or borrower — you agree to be bound by these Terms &amp; Conditions in full. If you do not agree, you must not use the platform.</p>
+        <div class="highlight-box">
+          Prototype notice: ShareSphere currently runs as an academic project. Payments are processed through Razorpay in test mode, so no real money is charged or paid out, and transfers to lenders are simulated and recorded in each booking's ledger.
+        </div>
       </div>
     </div>
 
@@ -270,8 +281,8 @@
         <ul class="tc-list">
           <li>Be at least 18 years of age</li>
           <li>Be a resident of India with a valid government-issued ID</li>
-          <li>Complete identity verification through the platform before listing or contacting lenders</li>
-          <li>Provide accurate and truthful personal information during registration</li>
+          <li>Complete identity verification through the platform. Only lenders and borrowers whose applications are approved by a ShareSphere administrator can list or book items</li>
+          <li>Provide accurate and truthful personal information during registration and verification</li>
         </ul>
         <p>ShareSphere reserves the right to reject or revoke access to any account that does not meet eligibility requirements.</p>
       </div>
@@ -286,9 +297,9 @@
           <li>Only list items that you legally own or have explicit authority to rent out</li>
           <li>Accurately describe the item's condition, defects, and included accessories</li>
           <li>Provide a minimum of 3 clear photographs and 1 working-condition video for every listing</li>
-          <li>Respond promptly to borrower enquiries received via the contact details you provide</li>
-          <li>Honour agreements made with borrowers through the platform</li>
-          <li>Keep your listing details (availability, price, condition) up to date</li>
+          <li>Provide valid payout details (bank account or UPI) before you hand over an item, because rent cannot be released to you without them</li>
+          <li>Hand over the item at the agreed pickup time and confirm the pickup in the app using the borrower's code and a photograph of the item</li>
+          <li>Keep your listing details (availability, price, deposit, condition) up to date</li>
         </ul>
         <div class="highlight-box">
           False or misleading item descriptions are grounds for immediate listing removal and account suspension.
@@ -302,35 +313,105 @@
       <div class="section-body">
         <p>As a borrower on ShareSphere, you agree to:</p>
         <ul class="tc-list">
-          <li>Contact lenders only for genuine rental enquiries related to the listed item</li>
+          <li>Book only for genuine rental needs and only after your borrower verification is approved</li>
+          <li>Pay the full booking amount (rent plus refundable security deposit) at the time of booking</li>
+          <li>Share your pickup and return codes with the lender only when you are physically present with the item</li>
           <li>Use the rented item only for its intended and lawful purpose</li>
           <li>Return the item on the agreed date and time in the same condition as received</li>
           <li>Not sub-rent, lend, or transfer the item to any third party</li>
           <li>Not tamper with, modify, or disassemble the item in any way</li>
-          <li>Resolve any payment, damage, or return disputes directly with the lender</li>
         </ul>
       </div>
     </div>
 
     <div class="tc-section" id="s5">
       <div class="section-number">Section 05</div>
-      <h2 class="section-heading">Communication &amp; Contact</h2>
+      <h2 class="section-heading">Booking &amp; Payments</h2>
       <div class="section-body">
-        <p>ShareSphere facilitates the initial connection between lenders and borrowers by sharing contact details (phone and email) once both parties have verified accounts. All further communication, negotiation, and agreement happens directly between the two parties.</p>
+        <p>Bookings are made through the platform for the dates you select. Dates that are already booked cannot be selected again. The rent and refundable security deposit are shown on the booking page before you pay.</p>
         <ul class="tc-list">
-          <li>Contact details are shared only after both parties have completed identity verification</li>
-          <li>You must not use contact details obtained through ShareSphere for spam, harassment, or any purpose unrelated to the rental</li>
-          <li>ShareSphere is not responsible for the outcome of any communication or deal made between users</li>
-          <li>All payments, deposits, and pricing terms are agreed directly between lender and borrower</li>
+          <li>Payment is made online through Razorpay. The rent and the deposit are charged together as one payment</li>
+          <li>After payment is verified, the amount is held in escrow by ShareSphere and the booking is confirmed</li>
+          <li>A booking that is not paid is not confirmed, and its dates are released automatically if payment is not completed within 15 minutes</li>
+          <li>Rent is released to the lender only after pickup is confirmed (see Section 6)</li>
+          <li>Every payment, release, and refund on a booking is recorded in that booking's transaction ledger, which both parties can view</li>
         </ul>
-        <div class="highlight-box">
-          ShareSphere does not mediate, arbitrate, or guarantee any rental arrangement. Users transact entirely at their own discretion and risk.
-        </div>
       </div>
     </div>
 
     <div class="tc-section" id="s6">
       <div class="section-number">Section 06</div>
+      <h2 class="section-heading">Pickup &amp; Return</h2>
+      <div class="section-body">
+        <p>Handover and return are confirmed in the app so that both parties have a record of the item's condition.</p>
+        <ul class="tc-list">
+          <li><strong>Pickup:</strong> after payment, the borrower receives a pickup code that only the borrower can see. When the borrower receives the item, the lender enters this code and uploads a photograph of the item. The rent is then released to the lender</li>
+          <li><strong>Return:</strong> when the item comes back, the lender enters a return code shown only to the borrower and uploads a photograph of the item. The security deposit is then refunded to the borrower</li>
+          <li>The photographs taken at pickup and at return are stored with the booking and may be used as evidence in a dispute</li>
+        </ul>
+        <div class="highlight-box">
+          Never share your code before you have the item in your hands, or after the handover has gone wrong. A code is your confirmation that the handover happened.
+        </div>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s7">
+      <div class="section-number">Section 07</div>
+      <h2 class="section-heading">Cancellations &amp; Refunds</h2>
+      <div class="section-body">
+        <ul class="tc-list">
+          <li>A booking that has not been paid can be abandoned at any time. It is cancelled and nothing is charged</li>
+          <li>After payment, the app does not offer a self-service cancellation. If the lender does not hand over the item, the rent is not released to the lender, because release requires the pickup code and photograph</li>
+          <li>In that case the borrower should contact support with the booking ID. A ShareSphere administrator reviews the booking and arranges a refund of the amount held in escrow</li>
+          <li>When the item is returned and confirmed in good condition, the full security deposit is refunded to the borrower</li>
+          <li>If the item is returned damaged or a dispute is raised, the deposit is refunded after deductions decided under Section 8</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s8">
+      <div class="section-number">Section 08</div>
+      <h2 class="section-heading">Disputes</h2>
+      <div class="section-body">
+        <p>Either the lender or the borrower can raise a dispute on a booking after pickup has been confirmed. To raise a dispute, you must describe the problem and may attach a photograph as evidence.</p>
+        <ul class="tc-list">
+          <li>Once a dispute is raised, the booking is marked as disputed and the normal return process is paused</li>
+          <li>A ShareSphere administrator reviews the dispute together with the pickup and return photographs and the booking ledger</li>
+          <li>The administrator decides on a deduction from the security deposit, which can never be more than the deposit amount</li>
+          <li>The remaining deposit is refunded to the borrower, and the dispute and decision are recorded with the booking</li>
+        </ul>
+        <p>Disputes are meant to be settled through this process. Nothing in it takes away any legal rights users have under Indian law.</p>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s9">
+      <div class="section-number">Section 09</div>
+      <h2 class="section-heading">Communication &amp; Contact</h2>
+      <div class="section-body">
+        <p>To arrange the pickup, the contact details and address of the other party are shown in the app once payment is confirmed. They are not shown while a booking is still unpaid.</p>
+        <ul class="tc-list">
+          <li>You must use these details only for arranging the rental they were shared for</li>
+          <li>You must not use contact details obtained through ShareSphere for spam, harassment, or any unrelated purpose</li>
+          <li>Pickup location and time must be agreed through the details shown on the booking</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s10">
+      <div class="section-number">Section 10</div>
+      <h2 class="section-heading">Reviews &amp; Ratings</h2>
+      <div class="section-body">
+        <p>After a booking is completed, the borrower can rate the lender from 1 to 5 stars and add a comment. Each booking can be reviewed only once, and only by the borrower on that booking.</p>
+        <ul class="tc-list">
+          <li>Reviews must be honest and based on the actual rental</li>
+          <li>The average rating and number of reviews are shown on the lender's listings</li>
+          <li>Abusive or false reviews can lead to account action under Section 12</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tc-section" id="s11">
+      <div class="section-number">Section 11</div>
       <h2 class="section-heading">Prohibited Items</h2>
       <div class="section-body">
         <p>The following items are strictly prohibited from being listed on ShareSphere:</p>
@@ -347,13 +428,14 @@
       </div>
     </div>
 
-    <div class="tc-section" id="s7">
-      <div class="section-number">Section 07</div>
+    <div class="tc-section" id="s12">
+      <div class="section-number">Section 12</div>
       <h2 class="section-heading">Account Suspension &amp; Termination</h2>
       <div class="section-body">
         <p>ShareSphere reserves the right to suspend or permanently terminate any account under the following circumstances:</p>
         <ul class="tc-list">
-          <li>Providing false information during registration or in a listing</li>
+          <li>Providing false information or false documents during registration, verification, or in a listing</li>
+          <li>Sharing or misusing pickup and return codes, or uploading misleading photographs</li>
           <li>Using contact details of other users for spam, harassment, or unrelated solicitation</li>
           <li>Listing prohibited items</li>
           <li>Abusive, threatening, or fraudulent behaviour toward other users</li>
@@ -363,55 +445,56 @@
       </div>
     </div>
 
-    <div class="tc-section" id="s8">
-      <div class="section-number">Section 08</div>
+    <div class="tc-section" id="s13">
+      <div class="section-number">Section 13</div>
       <h2 class="section-heading">Limitation of Liability</h2>
       <div class="section-body">
-        <p>ShareSphere is a discovery and connection platform only. We are not a party to any rental agreement between users and have no involvement in the exchange of money, goods, or services between lenders and borrowers.</p>
+        <p>ShareSphere provides verification, escrow handling, and dispute resolution to make renting safer, but it is not a party to the rental agreement between lender and borrower and cannot guarantee any rental.</p>
         <ul class="tc-list">
-          <li>ShareSphere is not liable for any loss, damage, theft, injury, or financial dispute arising from a rental</li>
+          <li>ShareSphere is not liable for any loss, damage, theft, or injury arising from a rental beyond the amounts held in escrow for that booking and the dispute process described in Section 8</li>
           <li>We do not guarantee the accuracy of item descriptions provided by lenders</li>
-          <li>We are not responsible for any direct, indirect, or consequential losses suffered by users</li>
-          <li>Users are solely responsible for verifying the identity, credibility, and item condition before transacting</li>
+          <li>Identity verification is carried out by reviewing the documents submitted, and we cannot guarantee that every submitted document is genuine</li>
+          <li>We are not responsible for indirect or consequential losses suffered by users</li>
         </ul>
-        <p>Users are strongly encouraged to exercise their own due diligence before entering into any rental arrangement.</p>
+        <p>Users are encouraged to inspect the item at pickup and to review the lender's ratings before booking.</p>
       </div>
     </div>
 
-    <div class="tc-section" id="s9">
-      <div class="section-number">Section 09</div>
+    <div class="tc-section" id="s14">
+      <div class="section-number">Section 14</div>
       <h2 class="section-heading">Privacy Policy</h2>
       <div class="section-body">
-        <p>ShareSphere collects personal data (name, phone, email, ID documents, address) strictly for the purpose of operating the platform and verifying user identity.</p>
+        <p>ShareSphere collects personal data (name, date of birth, phone, email, address, ID documents, selfie, and payout details) only to operate the platform, verify identity, and process bookings.</p>
         <ul class="tc-list">
           <li>Your personal data is never sold to third parties</li>
-          <li>Contact details are shared between lender and borrower only after both have verified accounts and mutual interest is confirmed</li>
-          <li>ID documents are used solely for identity verification and stored securely</li>
-          <li>You may request deletion of your account and associated data at any time</li>
+          <li>Contact details are shared with the other party in a booking only after payment is confirmed</li>
+          <li>ID documents and selfies are used solely for identity verification and are reviewed by ShareSphere administrators</li>
+          <li>Bank account numbers are masked when shown back to you in the app</li>
+          <li>You may request deletion of your account and associated data by contacting support</li>
         </ul>
         <p>By using ShareSphere, you consent to the collection and use of your data as described above, in accordance with the Information Technology Act, 2000 and applicable Indian data protection laws.</p>
       </div>
     </div>
 
-    <div class="tc-section" id="s10">
-      <div class="section-number">Section 10</div>
+    <div class="tc-section" id="s15">
+      <div class="section-number">Section 15</div>
       <h2 class="section-heading">Changes to These Terms</h2>
       <div class="section-body">
         <p>ShareSphere reserves the right to modify these Terms &amp; Conditions at any time. When changes are made:</p>
         <ul class="tc-list">
-          <li>Registered users will be notified via email at least 14 days before changes take effect</li>
+          <li>The updated terms will be published on this page</li>
           <li>The "Last Updated" date at the top of this page will be revised</li>
-          <li>Continued use of the platform after the effective date constitutes acceptance of the revised terms</li>
+          <li>Continued use of the platform after the update constitutes acceptance of the revised terms</li>
         </ul>
-        <p>If you disagree with any change, you must stop using ShareSphere before the effective date of the revision.</p>
+        <p>If you disagree with any change, you must stop using ShareSphere.</p>
       </div>
     </div>
 
-    <div class="tc-section" id="s11">
-      <div class="section-number">Section 11</div>
+    <div class="tc-section" id="s16">
+      <div class="section-number">Section 16</div>
       <h2 class="section-heading">Contact Us</h2>
       <div class="section-body">
-        <p>If you have any questions, concerns, or feedback regarding these Terms &amp; Conditions, please reach out to our support team:</p>
+        <p>If you have any questions, concerns, or feedback regarding these Terms &amp; Conditions, or need help with a booking, please reach out to our support team:</p>
         <ul class="tc-list">
           <li>Email: <strong>support@sharesphere.in</strong></li>
           <li>Response time: Within 2 business days</li>
@@ -421,11 +504,11 @@
     </div>
 
     <div class="agreement-banner">
-      <h3>Ready to list your item?</h3>
-      <p>By proceeding with your listing you confirm that you have read, understood, and agree to all of the above Terms &amp; Conditions.</p>
+      <h3>Have you read the terms?</h3>
+      <p>By registering, listing an item, or booking on ShareSphere, you confirm that you have read, understood, and agree to all of the above Terms &amp; Conditions.</p>
       <a href="javascript:history.back()" class="btn-back">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        Back to Listing Form
+        Go Back
       </a>
     </div>
 

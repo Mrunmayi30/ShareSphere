@@ -231,6 +231,11 @@
         actionsHtml += `<button class="btn btn-outline review-trigger" id="review-trigger-${b.id}" style="display:none;" onclick="toggleReviewForm(${b.id})">★ Rate &amp; Review</button>`;
       }
 
+      // "Cancel Booking" — borrower only, only while paid but not yet picked up
+      if (currentTab === 'borrower' && b.booking_status === 'CONFIRMED' && b.payment_status === 'HELD_IN_ESCROW') {
+        actionsHtml += `<button class="btn btn-danger-outline" onclick="cancelOrder(${b.id}, this)">Cancel Booking</button>`;
+      }
+
       actionsHtml += `<button class="btn btn-outline" onclick="toggleTimeline(${b.id}, this)">View Timeline</button>`;
 
       card.innerHTML = `
@@ -288,6 +293,38 @@
       }
 
       return card;
+    }
+
+    // Borrower cancels a paid booking before pickup -> full refund, item free again, lender emailed
+    async function cancelOrder(bookingId, btn) {
+      if (!confirm('Cancel this booking?\n\nYour full payment (rent + deposit) will be refunded, and the item will become available to others again.')) return;
+
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Cancelling...';
+
+      try {
+        const res = await fetch(`${BASE}/api/bookings/${bookingId}/cancel-order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ borrower_email: currentEmail })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast('✅ ' + data.message, 7000);
+          loadBookings();
+        } else {
+          showToast('⚠️ ' + (data.message || 'Could not cancel this booking'), 7000);
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+      } catch (err) {
+        console.error('cancelOrder error:', err);
+        showToast('⚠️ Could not reach the server. Please try again.', 7000);
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
     }
 
     // Toggles the inline report form open/closed (replaces the old prompt()-based flow)

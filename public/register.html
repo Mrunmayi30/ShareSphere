@@ -24,14 +24,6 @@
 
 
         <button type="button" class="next" id="send-otp-btn">Continue with Email</button>
-
-        <div class="or">or</div>
-
-        <!-- Google Sign Up Button -->
-        <button type="button" class="google" id="google-btn">
-            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google">
-            Sign up with Google
-        </button>
     </form>
 
     <!-- OTP Verification -->
@@ -85,11 +77,6 @@ catch(err){
 alert("Error sending OTP");
 }
 
-});
-
-// Google Sign Up
-document.getElementById("google-btn").addEventListener("click", () => {
-window.location.href = "/auth/google";
 });
 
 </script>

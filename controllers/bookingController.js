@@ -372,6 +372,137 @@ const cancelBooking = async (req, res) => {
   }
 };
 
+// ─── POST /api/bookings/:id/cancel-order ──────────────────────────────────────
+// Borrower cancels a PAID booking BEFORE pickup (money still in escrow).
+// Full Razorpay refund, booking CANCELLED, item available again, emails sent.
+// If the refund fails, the booking is put back exactly as it was.
+const cancelPaidBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { borrower_email } = req.body || {};
+
+    const [rows] = await db.query(
+      `SELECT b.*, i.title FROM bookings b JOIN items i ON b.item_id = i.id WHERE b.id = ?`,
+      [id]
+    );
+    if (!rows.length) {
+      return res.status(404).json({ success: false, message: 'Booking not found' });
+    }
+    const booking = rows[0];
+
+    // Only the borrower who made the booking can cancel it
+    if (
+      !borrower_email ||
+      String(borrower_email).trim().toLowerCase() !== String(booking.borrower_email).trim().toLowerCase()
+    ) {
+      return res.status(403).json({ success: false, message: 'Only the borrower who made this booking can cancel it' });
+    }
+
+    // Only before pickup: paid, money still in escrow
+    if (booking.booking_status !== 'CONFIRMED' || booking.payment_status !== 'HELD_IN_ESCROW') {
+      return res.status(400).json({
+        success: false,
+        message: 'This booking can no longer be cancelled (it is unpaid, already picked up, or already cancelled).',
+      });
+    }
+    if (!booking.razorpay_payment_id) {
+      return res.status(400).json({ success: false, message: 'No payment found to refund for this booking' });
+    }
+
+    // Step 1: claim the booking so only one request can ever reach the refund
+    const [claim] = await db.query(
+      `UPDATE bookings
+         SET booking_status = 'CANCELLED', payment_status = 'UNPAID', pickup_otp = NULL
+       WHERE id = ? AND booking_status = 'CONFIRMED' AND payment_status = 'HELD_IN_ESCROW'`,
+      [id]
+    );
+    if (claim.affectedRows === 0) {
+      return res.status(400).json({ success: false, message: 'This booking was already changed or cancelled.' });
+    }
+
+    // Step 2: full refund through Razorpay (no amount = refund the whole payment)
+    let refund;
+    try {
+      refund = await razorpay.payments.refund(booking.razorpay_payment_id, {
+        notes: { booking_id: String(booking.id), reason: 'cancelled_by_borrower' },
+      });
+    } catch (refundErr) {
+      console.error('cancelPaidBooking refund failed:', refundErr);
+      // Put the booking back exactly as it was
+      await db.query(
+        `UPDATE bookings
+           SET booking_status = 'CONFIRMED', payment_status = 'HELD_IN_ESCROW', pickup_otp = ?
+         WHERE id = ?`,
+        [booking.pickup_otp, id]
+      );
+      return res.status(502).json({
+        success: false,
+        message: 'Refund could not be processed, so your booking was NOT cancelled. Please try again.',
+      });
+    }
+
+    // Step 3: ledger entry
+    try {
+      await addLedgerEntry({
+        booking_id: id,
+        event_type: 'booking_cancelled',
+        amount: booking.total_payable,
+        from_party: 'ShareSphere Escrow',
+        to_party: booking.borrower_email,
+        note: `Cancelled by borrower before pickup — full refund issued (${refund && refund.id ? refund.id : 'refund id n/a'})`,
+      });
+    } catch (ledgerErr) {
+      console.error('cancelPaidBooking ledger error:', ledgerErr.message);
+    }
+
+    // Step 4a: tell the lender (owner)
+    try {
+      await transporter.sendMail({
+        from: `"ShareSphere" <${process.env.EMAIL_USER}>`,
+        to: booking.lender_email,
+        subject: `Booking Cancelled — ${booking.title}`,
+        html: `
+          <h2>A booking for your item was cancelled</h2>
+          <p><strong>Item:</strong> ${booking.title}</p>
+          <p><strong>Borrower:</strong> ${booking.borrower_email}</p>
+          <p><strong>Dates:</strong> ${booking.start_date} to ${booking.end_date}</p>
+          <p>The borrower cancelled before pickup, so you do not need to hand over the item. Your item is now available for other borrowers again.</p>
+          <p style="color:#888;font-size:12px;">Booking ID: #${id}</p>
+        `,
+      });
+    } catch (emailErr) {
+      console.error('Lender cancellation email failed:', emailErr.message);
+    }
+
+    // Step 4b: confirm to the borrower
+    try {
+      await transporter.sendMail({
+        from: `"ShareSphere" <${process.env.EMAIL_USER}>`,
+        to: booking.borrower_email,
+        subject: `Booking Cancelled — ${booking.title}`,
+        html: `
+          <h2>Your booking has been cancelled</h2>
+          <p><strong>Item:</strong> ${booking.title}</p>
+          <p><strong>Dates:</strong> ${booking.start_date} to ${booking.end_date}</p>
+          <p><strong>Refund:</strong> ₹${booking.total_payable} (rent + deposit) has been sent back to your original payment method.</p>
+          <p style="color:#888;font-size:12px;">Booking ID: #${id}</p>
+        `,
+      });
+    } catch (emailErr) {
+      console.error('Borrower cancellation email failed:', emailErr.message);
+    }
+
+    res.json({
+      success: true,
+      message: `Booking cancelled. A full refund of ₹${booking.total_payable} has been initiated.`,
+      refund_amount: booking.total_payable,
+    });
+  } catch (err) {
+    console.error('cancelPaidBooking error:', err);
+    res.status(500).json({ success: false, message: 'Failed to cancel booking' });
+  }
+};
+
 // ─── GET /api/bookings/borrower/:email ───────────────────────────────────────
 // FIX: only shows bookings that actually became real bookings (payment went
 // through at least once). A row that never got past PENDING_PAYMENT was
@@ -704,6 +835,7 @@ module.exports = {
   createOrder,
   verifyPayment,
   cancelBooking,
+  cancelPaidBooking,
   getBorrowerBookings,
   getLenderBookings,
   updateBookingStatus,

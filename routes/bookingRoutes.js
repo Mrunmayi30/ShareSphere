@@ -8,6 +8,7 @@ const {
   createOrder,
   verifyPayment,
   cancelBooking,
+  cancelPaidBooking,
   getBorrowerBookings,
   getLenderBookings,
   updateBookingStatus,
@@ -34,6 +35,7 @@ router.post('/',                      createBooking);
 router.post('/:id/create-order',      createOrder);
 router.post('/:id/verify-payment',    verifyPayment);
 router.post('/:id/cancel',            cancelBooking);
+router.post('/:id/cancel-order',      cancelPaidBooking);   // borrower cancels a paid booking before pickup
 
 // User views
 router.get('/borrower/:email',        getBorrowerBookings);
